@@ -231,7 +231,7 @@ html{scroll-behavior:smooth}
 
 <nav class="p-nav" aria-label="Sections"><div class="in">
   <b>Power Twin · LC3D 2026</b>
-  <a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#results">Results</a><a href="#explorer">312 scans</a><a href="#case-study" class="hide-s">Case study</a><a href="#cite">Cite</a>
+  <a href="#abstract">Abstract</a><a href="#explorer">Results</a><a href="#results" class="hide-s">Evaluation</a><a href="#case-study" class="hide-s">Case study</a><a href="#method">Method</a><a href="#cite">Cite</a>
 </div></nav>
 
 <section class="p-hero">
@@ -244,9 +244,6 @@ html{scroll-behavior:smooth}
     <a class="p-btn o" href="https://powertwin.fbk.eu/" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12L12 4M6 4h6v6"/></svg>Power Twin project</a>
     <a class="p-btn o" href="https://3dom.fbk.eu" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12L12 4M6 4h6v6"/></svg>3DOM – FBK</a>
     <a class="p-btn o" href="#cite"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M4 9l4 4 4-4"/></svg>BibTeX</a>
-  </div>
-  <div class="p-teaser">
-    <figure class="p-fig "><img src="assets/fig3_overview.webp" alt="Workflow overview from point cloud to BIM and BEM" loading="lazy"><figcaption><b>From one walk-through to a simulation-ready building.</b> (a) Input point cloud and object detection; (b) 3D device mapping and panoptic segmentation; (c) solid model; (d) surface-based topological model and device positions; (e) complete semantic graph; (f) BIM; (g) BEM.</figcaption></figure>
   </div>
 </section>
 
@@ -263,78 +260,11 @@ html{scroll-behavior:smooth}
   </div>
 </section>
 
-<section class="p-sec" id="method">
-  <div class="eyebrow">Method</div>
-  <h2>Six stages from raw observations to an energy-oriented building graph</h2>
-  <div class="p-two wide-l">
-    <figure class="p-fig frame"><img src="assets/fig1_workflow.webp" alt="<b>Figure 1" loading="lazy"><figcaption><b>Figure 1.</b> The mapping-to-BIM/BEM workflow: the point cloud gives the 3D reference and the building structure, registered images give the devices and their nameplates, and everything meets in the semantic BEM graph G = (V, E).</figcaption></figure>
-    <ol class="p-steps">
-      <li><div><b>Data acquisition</b><span>The in-house STELVIO stereo-visual-LiDAR-inertial system outputs a dense RGB point cloud, the camera trajectory and raw imagery in one SLAM frame.</span></div></li>
-      <li><div><b>Structural 3D reconstruction</b><span>Superpoint Transformer labels floor, ceiling, wall, column and openings; RANSAC, DBSCAN and wall-plane rasterization split them into instances with a panoptic identifier.</span></div></li>
-      <li><div><b>Image-based device recognition</b><span>Open-vocabulary detectors and segmenters (YOLO-World, GroundingDINO, SAM2, SAM3) find lights, radiators, sockets, sensors and HVAC units from class prompts.</span></div></li>
-      <li><div><b>Multi-view 3D instance reconstruction</b><span>Masks are back-projected with depth and pose; cross-view support votes each point's class, and geometric priors remove implausible instances.</span></div></li>
-      <li><div><b>Technical attribute extraction</b><span>GLM-OCR reads nameplates into parameter–value–unit tuples, normalized to EnergyPlus conventions and linked to the device, its room and thermal zone.</span></div></li>
-      <li><div><b>Graph-based BEM generation</b><span>Spaces, elements, surfaces and devices form a typed semantic graph, exported to EnergyPlus epJSON and to Revit through Dynamo.</span></div></li>
-    </ol>
-  </div>
-  <div class="p-two">
-    <figure class="p-fig frame"><img src="assets/fig2_detections.webp" alt="<b>Figure 2" loading="lazy"><figcaption><b>Figure 2.</b> Device detection on ScanNet frames with GroundingDINO + SAM2 (Method D) and the class prompts below.</figcaption></figure>
-    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
-      <div class="p-tblbox"><table class="p-tbl"><thead><tr><th>Category</th><th>Prompts</th></tr></thead><tbody>
-        <tr><td>Lighting</td><td><em>light fixtures, ceiling lights</em></td></tr>
-        <tr><td>Heating</td><td><em>radiators, heaters, boilers, water heaters</em></td></tr>
-        <tr><td>Electrical</td><td><em>power outlets, wall sockets</em></td></tr>
-        <tr><td>Sensors / controls</td><td><em>detector, thermostat, switch</em></td></tr>
-        <tr><td>Devices</td><td><em>electric devices, monitors</em></td></tr>
-        <tr><td>HVAC</td><td><em>HVAC unit, ventilation device</em></td></tr>
-      </tbody></table></div>
-      <div class="p-tblbox"><table class="p-tbl"><thead><tr><th>Method</th><th>Strategy</th><th>Configuration</th></tr></thead><tbody>
-        <tr><td>A</td><td>Detector-first</td><td>YOLO-World + SAM2</td></tr>
-        <tr><td>B</td><td>Detector-first</td><td>YOLO-World + SAM3</td></tr>
-        <tr><td>C</td><td>Segment-first</td><td>SAM3 + YOLO-World</td></tr>
-        <tr><td>D</td><td>Detector-first, open-vocabulary</td><td>GroundingDINO + SAM2</td></tr>
-      </tbody></table></div>
-    </div>
-  </div>
-  <div class="p-two">
-    <figure class="p-fig frame"><img src="assets/fig9_graph_steps.webp" alt="<b>Figure 9" loading="lazy"><figcaption><b>Figure 9.</b> From the initial point cloud to the typed semantic graph used for BEM and Energy Digital Twin generation.</figcaption></figure>
-    <div class="p-prose">
-      <h3>The semantic graph is the coupling layer</h3>
-      <p>The panoptic point cloud and the reconstructed devices are assembled into a directed, typed graph. Nodes are spatial, architectural and device entities; edges encode verified spatial or functional relations such as adjacency, containment and connectivity.</p>
-      <p>Every architectural element keeps its semantic class and instance identity, and every device is linked to its room, supporting surface and thermal zone. The same graph drives epJSON generation, scene-level queries and BIM exchange, keeping traceability from source images to simulation parameters.</p>
-    </div>
-  </div>
-</section>
-
-<section class="p-sec" id="results">
-  <div class="eyebrow">Results on ScanNet</div>
-  <h2>Structure is reliable; device precision is the open problem</h2>
-  <p class="p-prose">All 312 ScanNet scans were processed. Floor, ceiling and wall reach 87–94% IoU, while openings and columns remain the weakest classes (46–59%). For devices, precision is the main limitation: false or duplicate detections that survive multi-view fusion become spurious instances.</p>
-  <figure class="p-fig frame narrow"><img src="assets/fig7_structural.webp" alt="<b>Figure 7" loading="lazy"><figcaption><b>Figure 7.</b> Per-class structural reconstruction metrics (IoU and F1) on the 312 ScanNet scans.</figcaption></figure>
-  <div class="p-two">
-    <figure class="p-fig frame"><img src="assets/fig4_image_level.webp" alt="<b>Figure 4" loading="lazy"><figcaption><b>Figure 4.</b> Image-level detection: Method C recalls 73.4% of devices at 49.5% precision; A and B are the most precise (79.3%, 78.6%) but recall about 35%.</figcaption></figure>
-    <figure class="p-fig frame"><img src="assets/fig5_instance_level.webp" alt="<b>Figure 5" loading="lazy"><figcaption><b>Figure 5.</b> Instance level after multi-view fusion and geometric filtering: A reaches 54.0% F1 (P 56.6%, R 51.7%), then B 51.7%, C 49.7% and D 42.6%.</figcaption></figure>
-  </div>
-  <div class="p-two">
-    <figure class="p-fig frame"><img src="assets/fig8_compute.webp" alt="<b>Figure 8" loading="lazy"><figcaption><b>Figure 8.</b> Computational efficiency. Method D is the most balanced (0.66 s/frame, 4.66 instances/s, about 3.56 GB); A has the lowest memory (2.29 GB).</figcaption></figure>
-    <figure class="p-fig frame"><img src="assets/fig6_failures.webp" alt="<b>Figure 6" loading="lazy"><figcaption><b>Figure 6.</b> Common failure modes: background similarity, small or visually variable objects and taxonomy mismatch.</figcaption></figure>
-  </div>
-  <div class="p-two wide-l">
-    <figure class="p-fig frame"><img src="assets/fig10_scenes.webp" alt="<b>Figure 10" loading="lazy"><figcaption><b>Figure 10.</b> Representative scenes from the input RGB cloud to the classified cloud, the solid model and the BEM with its scene graph. (c) shows a case where watertightness forces an over-simplified outline.</figcaption></figure>
-    <div class="p-prose">
-      <h3>Energy simulation</h3>
-      <p>Each zone was exported to epJSON and simulated in EnergyPlus 24.2 with generic constructions, a central-European weather file (Mannheim, DWD test reference year) and an ideal-loads system (20/26 °C).</p>
-      <p><b>311 of 312 scans (99.7%)</b> give a closed thermal zone that completes an annual simulation without severe errors. The median footprint IoU is 0.81, floor-area and volume errors are 9.6% and 11.1%, and height error is 4.2%.</p>
-      <p class="p-callout">The volume error follows the footprint (correlation 0.87) and not the height (0.04). Walls are placed within centimetres; the deviations come from closing outlines where walls were only partly captured.</p>
-    </div>
-  </div>
-</section>
-
 <section class="p-sec explorer-sec" id="explorer">
 
   <header class="head">
     <div>
-      <div class="eyebrow">Interactive results · ScanNet benchmark</div>
+      <div class="eyebrow">Results · interactive, all 312 ScanNet scans</div>
       <h2 class="x-title">All 312 ScanNet scans, from point cloud to energy model</h2>
       <p class="lede">Every ScanNet scan processed by the pipeline: panoptic segmentation, wall and opening reconstruction, a closed solid, the EnergyPlus surface model and the scene graph. Pick a scan to rotate all five 3D views together.</p>
       <div class="pipe"><span>RGB cloud</span><i>→</i><span>panoptic</span><i>→</i><span>walls · openings</span><i>→</i><span>solid</span><i>→</i><span>BEM surfaces</span><i>→</i><span>graph</span></div>
@@ -429,6 +359,30 @@ html{scroll-behavior:smooth}
 
 </section>
 
+<section class="p-sec" id="results">
+  <div class="eyebrow">Results · evaluation on ScanNet</div>
+  <h2>Structure is reliable; device precision is the open problem</h2>
+  <p class="p-prose">All 312 ScanNet scans were processed. Floor, ceiling and wall reach 87–94% IoU, while openings and columns remain the weakest classes (46–59%). For devices, precision is the main limitation: false or duplicate detections that survive multi-view fusion become spurious instances.</p>
+  <figure class="p-fig frame narrow"><img src="assets/fig7_structural.webp" alt="<b>Figure 7" loading="lazy"><figcaption><b>Figure 7.</b> Per-class structural reconstruction metrics (IoU and F1) on the 312 ScanNet scans.</figcaption></figure>
+  <div class="p-two">
+    <figure class="p-fig frame"><img src="assets/fig4_image_level.webp" alt="<b>Figure 4" loading="lazy"><figcaption><b>Figure 4.</b> Image-level detection: Method C recalls 73.4% of devices at 49.5% precision; A and B are the most precise (79.3%, 78.6%) but recall about 35%.</figcaption></figure>
+    <figure class="p-fig frame"><img src="assets/fig5_instance_level.webp" alt="<b>Figure 5" loading="lazy"><figcaption><b>Figure 5.</b> Instance level after multi-view fusion and geometric filtering: A reaches 54.0% F1 (P 56.6%, R 51.7%), then B 51.7%, C 49.7% and D 42.6%.</figcaption></figure>
+  </div>
+  <div class="p-two">
+    <figure class="p-fig frame"><img src="assets/fig8_compute.webp" alt="<b>Figure 8" loading="lazy"><figcaption><b>Figure 8.</b> Computational efficiency. Method D is the most balanced (0.66 s/frame, 4.66 instances/s, about 3.56 GB); A has the lowest memory (2.29 GB).</figcaption></figure>
+    <figure class="p-fig frame"><img src="assets/fig6_failures.webp" alt="<b>Figure 6" loading="lazy"><figcaption><b>Figure 6.</b> Common failure modes: background similarity, small or visually variable objects and taxonomy mismatch.</figcaption></figure>
+  </div>
+  <div class="p-two wide-l">
+    <figure class="p-fig frame"><img src="assets/fig10_scenes.webp" alt="<b>Figure 10" loading="lazy"><figcaption><b>Figure 10.</b> Representative scenes from the input RGB cloud to the classified cloud, the solid model and the BEM with its scene graph. (c) shows a case where watertightness forces an over-simplified outline.</figcaption></figure>
+    <div class="p-prose">
+      <h3>Energy simulation</h3>
+      <p>Each zone was exported to epJSON and simulated in EnergyPlus 24.2 with generic constructions, a central-European weather file (Mannheim, DWD test reference year) and an ideal-loads system (20/26 °C).</p>
+      <p><b>311 of 312 scans (99.7%)</b> give a closed thermal zone that completes an annual simulation without severe errors. The median footprint IoU is 0.81, floor-area and volume errors are 9.6% and 11.1%, and height error is 4.2%.</p>
+      <p class="p-callout">The volume error follows the footprint (correlation 0.87) and not the height (0.04). Walls are placed within centimetres; the deviations come from closing outlines where walls were only partly captured.</p>
+    </div>
+  </div>
+</section>
+
 <section class="p-sec" id="case-study">
   <div class="eyebrow">Case study</div>
   <h2>A real flat surveyed with STELVIO, end to end</h2>
@@ -442,6 +396,53 @@ html{scroll-behavior:smooth}
     <figure class="p-fig frame"><img src="assets/fig11_ocr.webp" alt="<b>Figure 11" loading="lazy"><figcaption><b>Figure 11.</b> OCR-assisted mapping of nameplate data to EnergyPlus epJSON. On seven boiler and water-heater plates, 48 of 52 parameters (92%) were read correctly.</figcaption></figure>
   </div>
   <figure class="p-fig frame narrow"><img src="assets/fig15_dynamo.webp" alt="<b>Figure 15" loading="lazy"><figcaption><b>Figure 15.</b> The semantic graph imported into Revit through Dynamo: space topology, scene graph and temperature. Each node becomes a DirectShape of its built-in category.</figcaption></figure>
+</section>
+
+<section class="p-sec" id="method">
+  <div class="eyebrow">Method</div>
+  <h2>Six stages from raw observations to an energy-oriented building graph</h2>
+  <div class="p-teaser">
+    <figure class="p-fig "><img src="assets/fig3_overview.webp" alt="Workflow overview from point cloud to BIM and BEM" loading="lazy"><figcaption><b>Figure 3. From one walk-through to a simulation-ready building.</b> (a) Input point cloud and object detection; (b) 3D device mapping and panoptic segmentation; (c) solid model; (d) surface-based topological model and device positions; (e) complete semantic graph; (f) BIM; (g) BEM.</figcaption></figure>
+  </div>
+
+  <div class="p-two wide-l">
+    <figure class="p-fig frame"><img src="assets/fig1_workflow.webp" alt="<b>Figure 1" loading="lazy"><figcaption><b>Figure 1.</b> The mapping-to-BIM/BEM workflow: the point cloud gives the 3D reference and the building structure, registered images give the devices and their nameplates, and everything meets in the semantic BEM graph G = (V, E).</figcaption></figure>
+    <ol class="p-steps">
+      <li><div><b>Data acquisition</b><span>The in-house STELVIO stereo-visual-LiDAR-inertial system outputs a dense RGB point cloud, the camera trajectory and raw imagery in one SLAM frame.</span></div></li>
+      <li><div><b>Structural 3D reconstruction</b><span>Superpoint Transformer labels floor, ceiling, wall, column and openings; RANSAC, DBSCAN and wall-plane rasterization split them into instances with a panoptic identifier.</span></div></li>
+      <li><div><b>Image-based device recognition</b><span>Open-vocabulary detectors and segmenters (YOLO-World, GroundingDINO, SAM2, SAM3) find lights, radiators, sockets, sensors and HVAC units from class prompts.</span></div></li>
+      <li><div><b>Multi-view 3D instance reconstruction</b><span>Masks are back-projected with depth and pose; cross-view support votes each point's class, and geometric priors remove implausible instances.</span></div></li>
+      <li><div><b>Technical attribute extraction</b><span>GLM-OCR reads nameplates into parameter–value–unit tuples, normalized to EnergyPlus conventions and linked to the device, its room and thermal zone.</span></div></li>
+      <li><div><b>Graph-based BEM generation</b><span>Spaces, elements, surfaces and devices form a typed semantic graph, exported to EnergyPlus epJSON and to Revit through Dynamo.</span></div></li>
+    </ol>
+  </div>
+  <div class="p-two">
+    <figure class="p-fig frame"><img src="assets/fig2_detections.webp" alt="<b>Figure 2" loading="lazy"><figcaption><b>Figure 2.</b> Device detection on ScanNet frames with GroundingDINO + SAM2 (Method D) and the class prompts below.</figcaption></figure>
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <div class="p-tblbox"><table class="p-tbl"><thead><tr><th>Category</th><th>Prompts</th></tr></thead><tbody>
+        <tr><td>Lighting</td><td><em>light fixtures, ceiling lights</em></td></tr>
+        <tr><td>Heating</td><td><em>radiators, heaters, boilers, water heaters</em></td></tr>
+        <tr><td>Electrical</td><td><em>power outlets, wall sockets</em></td></tr>
+        <tr><td>Sensors / controls</td><td><em>detector, thermostat, switch</em></td></tr>
+        <tr><td>Devices</td><td><em>electric devices, monitors</em></td></tr>
+        <tr><td>HVAC</td><td><em>HVAC unit, ventilation device</em></td></tr>
+      </tbody></table></div>
+      <div class="p-tblbox"><table class="p-tbl"><thead><tr><th>Method</th><th>Strategy</th><th>Configuration</th></tr></thead><tbody>
+        <tr><td>A</td><td>Detector-first</td><td>YOLO-World + SAM2</td></tr>
+        <tr><td>B</td><td>Detector-first</td><td>YOLO-World + SAM3</td></tr>
+        <tr><td>C</td><td>Segment-first</td><td>SAM3 + YOLO-World</td></tr>
+        <tr><td>D</td><td>Detector-first, open-vocabulary</td><td>GroundingDINO + SAM2</td></tr>
+      </tbody></table></div>
+    </div>
+  </div>
+  <div class="p-two">
+    <figure class="p-fig frame"><img src="assets/fig9_graph_steps.webp" alt="<b>Figure 9" loading="lazy"><figcaption><b>Figure 9.</b> From the initial point cloud to the typed semantic graph used for BEM and Energy Digital Twin generation.</figcaption></figure>
+    <div class="p-prose">
+      <h3>The semantic graph is the coupling layer</h3>
+      <p>The panoptic point cloud and the reconstructed devices are assembled into a directed, typed graph. Nodes are spatial, architectural and device entities; edges encode verified spatial or functional relations such as adjacency, containment and connectivity.</p>
+      <p>Every architectural element keeps its semantic class and instance identity, and every device is linked to its room, supporting surface and thermal zone. The same graph drives epJSON generation, scene-level queries and BIM exchange, keeping traceability from source images to simulation parameters.</p>
+    </div>
+  </div>
 </section>
 
 <section class="p-sec" id="cite">
