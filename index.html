@@ -429,7 +429,7 @@ html{scroll-behavior:smooth}
         <div class="pv" data-k="2"><div class="lab"><b>Classified cloud + model</b><span>points inside the wall wireframe</span></div><button class="ex" title="Enlarge" aria-label="Enlarge classified view">⤢</button></div>
         <div class="pv" data-k="3"><div class="lab"><b>Solid model</b><span>walls, slab, openings + objects</span></div><button class="ex" title="Enlarge" aria-label="Enlarge solid model">⤢</button></div>
         <div class="pv" data-k="4"><div class="lab"><b>Surface-based model</b><span>EnergyPlus surfaces, openings, objects</span></div><button class="ex" title="Enlarge" aria-label="Enlarge surface-based model">⤢</button></div>
-        <div class="pv graph" data-k="5"><svg class="g" id="graph" viewBox="-1.32 -1.06 2.64 2.40" role="img" aria-label="Scene graph"></svg><div class="lab"><b>Scene graph</b><span>zone, walls, openings, objects</span></div><button class="ex" title="Enlarge" aria-label="Enlarge scene graph">⤢</button></div>
+        <div class="pv graph" data-k="5"><svg class="g" id="graph" viewBox="-1.08 -0.98 2.16 1.98" role="img" aria-label="Scene graph"></svg><div class="lab"><b>Semantic graph</b><span>building, room, walls, openings, objects</span></div><button class="ex" title="Enlarge" aria-label="Enlarge scene graph">⤢</button></div>
         <div class="loading" id="loading" hidden>Loading scan…</div>
       </div>
       <div class="bar">
@@ -661,35 +661,43 @@ function select(s){
 const tip = $("#tip");
 function showTip(e, t){ tip.textContent = t; tip.hidden = false; const w = tip.offsetWidth; tip.style.left = Math.min(e.clientX + 12, innerWidth - w - 8) + "px"; tip.style.top = (e.clientY + 14) + "px"; }
 function graph(s){
-  const svg = $("#graph"), N = [], E = [], P = (x, y) => [x, -y];
-  N.push({ k: "B", p: P(.95, .86), c: "#263238", r: .05, l: "Building", big: 1 }, { k: "Z", p: P(0, 0), c: "#3F4A5E", r: .045, l: "Zone", big: 1 }); E.push(["B", "Z", "s"]);
-  const nw = Math.max(s.walls.length, 1);
-  s.walls.forEach((w, i) => { const a = 2 * Math.PI * i / nw + .35, p = [.74 * Math.cos(a), .74 * Math.sin(a)];
-    N.push({ k: "w" + i, p: P(...p), c: "#90A4AE", r: .026, l: "W" + i, wall: i, ang: a, lr: .05 }); E.push(["Z", "w" + i, "s"]);
+  // Typed semantic graph as defined in the paper (Fig. 9h / Fig. 10): Building -> Room; Room -> Floor, Ceiling,
+  // walls (W0..Wn) and object instances; each wall -> the doors and windows it hosts.
+  const svg = $("#graph"), N = [], E = [];
+  const C = { building: "#1F2A33", room: "#3D4A5F", wall: "#9AABB6", object: "#A0613F", door: "#E07B39", window: "#4A97C9",
+              floor: "#D9CBA3", ceiling: "#D5DADF" };
+  const EC = { room: "#56606E", wall: "#AEBBC4", object: "#D2A88C", door: "#F0B48A", window: "#9CC5E3", slab: "#C9CED3" };
+  const pol = (r, a) => [r * Math.cos(a), r * Math.sin(a)];
+  N.push({ k: "B", p: [0, -.5], c: C.building, r: .068, l: "Building", big: 1 }, { k: "R", p: [0, 0], c: C.room, r: .052, l: "Room", big: 1 });
+  E.push(["B", "R", EC.room, .011]);
+  // walls on the outer ring, leaving the top free for the Building node
+  const nw = Math.max(s.walls.length, 1), nDoor = { door: 0, window: 0 };
+  s.walls.forEach((w, i) => {
+    const a = -Math.PI / 2 + (i + .5) * 2 * Math.PI / nw, p = pol(.6, a);
+    N.push({ k: "w" + i, p, c: C.wall, r: .024, l: "W" + i, wall: i, ang: a }); E.push(["R", "w" + i, EC.wall, .007]);
     const hs = s.ops.map((o, j) => [o, j]).filter(([o]) => o.w === i);
-    hs.forEach(([o, j], n) => { const aa = a + (n - (hs.length - 1) / 2) * .22;
-      N.push({ k: "o" + j, p: P(p[0] + .24 * Math.cos(aa), p[1] + .24 * Math.sin(aa)), c: o.t === "door" ? "#E07B39" : "#4A97C2", r: .03, l: o.t, op: j, ang: aa, lr: .05 }); E.push(["w" + i, "o" + j, "o"]); });
+    hs.forEach(([o, j], n) => { const aa = a + (n - (hs.length - 1) / 2) * .42, q = [p[0] + .22 * Math.cos(aa), p[1] + .22 * Math.sin(aa)];
+      N.push({ k: "o" + j, p: q, c: C[o.t], r: .03, l: `${o.t} ${nDoor[o.t]++}`, op: j }); E.push(["w" + i, "o" + j, EC[o.t], .007]); });
   });
-  N.push({ k: "F", p: P(-.13, -.1), c: "#C9B999", r: .026, l: "Floor" }, { k: "C", p: P(.13, -.1), c: "#D5DADF", r: .026, l: "Ceiling" }); E.push(["Z", "F", "s"], ["Z", "C", "s"]);
-  const objs = s.insts.map((v, j) => [v, j + 1]).filter(([v]) => v[2]); const no = Math.max(objs.length, 1);
-  objs.forEach(([v, id], i) => { const a = 2 * Math.PI * (i + .5) / no + .35, r = no > 18 ? .3 + .07 * (i % 2) : .34;
-    N.push({ k: "i" + id, p: P(r * Math.cos(a), r * Math.sin(a)), c: "#A0673E", r: .019, l: D.classes[v[0]] || "object", inst: id, pts: v[1], ang: a, lr: .035, small: no > 18 }); E.push(["Z", "i" + id, "i"]); });
-  const at = Object.fromEntries(N.map(n => [n.k, n]));
-  const ec = { s: tok("--faint"), o: "#7E98AE", i: "#CBA684" }, pnl = tok("--panel"), mut = tok("--muted");
-  let o = E.map(([a, b, t]) => `<line x1="${at[a].p[0]}" y1="${at[a].p[1]}" x2="${at[b].p[0]}" y2="${at[b].p[1]}" stroke="${ec[t]}" stroke-width=".006" stroke-opacity=".8"/>`).join("");
-  const label = n => {
-    const fs = n.big ? .062 : n.small ? .036 : .042, st = `font-family:var(--f-body);pointer-events:none`;
-    if (n.ang == null) return `<text x="${n.p[0]}" y="${n.p[1] + n.r + (n.big ? .07 : .05)}" font-size="${fs}" text-anchor="middle" fill="${mut}" stroke="${pnl}" stroke-width=".016" paint-order="stroke" style="${st}">${n.l}</text>`;
-    let deg = -n.ang * 180 / Math.PI, left = Math.cos(n.ang) < 0; if (left) deg += 180;
-    const dx = Math.cos(n.ang) * (n.r + .012), dy = -Math.sin(n.ang) * (n.r + .012);
-    return `<text transform="translate(${n.p[0] + dx} ${n.p[1] + dy}) rotate(${deg})" font-size="${fs}" text-anchor="${left ? "end" : "start"}" dominant-baseline="central" fill="${mut}" stroke="${pnl}" stroke-width=".016" paint-order="stroke" style="${st}">${n.l}</text>`;
-  };
+  // floor and ceiling next to the room
+  N.push({ k: "F", p: [-.15, .11], c: C.floor, r: .024, l: "Floor" }, { k: "C", p: [.17, .07], c: C.ceiling, r: .024, l: "Ceiling" });
+  E.push(["R", "F", EC.slab, .006], ["R", "C", EC.slab, .006]);
+  // object instances around the room, two staggered rings
+  const objs = s.insts.map((v, j) => [v, j + 1]).filter(([v]) => v[2]), no = Math.max(objs.length, 1);
+  objs.forEach(([v, id], i) => { const a = -Math.PI / 2 + .28 + (i + .5) * (2 * Math.PI - .56) / no, r = no > 14 ? (i % 2 ? .39 : .27) : .33;
+    N.push({ k: "i" + id, p: pol(r, a), c: C.object, r: .021, l: D.classes[v[0]] || "object", inst: id, pts: v[1] }); E.push(["R", "i" + id, EC.object, .006]); });
+  const at = Object.fromEntries(N.map(n => [n.k, n])), pnl = tok("--panel"), mut = tok("--muted"), ink = tok("--ink");
+  let o = E.map(([a, b, c, w]) => `<line x1="${at[a].p[0]}" y1="${at[a].p[1]}" x2="${at[b].p[0]}" y2="${at[b].p[1]}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`).join("");
   o += N.map(n => `<g class="gn" data-k="${n.k}" style="cursor:${n.wall != null || n.op != null || n.inst ? "pointer" : "default"}">
-      <circle cx="${n.p[0]}" cy="${n.p[1]}" r="${Math.max(n.r, .04)}" fill="transparent"/>
-      <circle class="dotc" cx="${n.p[0]}" cy="${n.p[1]}" r="${n.r}" fill="${n.c}" stroke="${pnl}" stroke-width=".008"/>${label(n)}</g>`).join("");
+      <circle cx="${n.p[0]}" cy="${n.p[1]}" r="${Math.max(n.r, .045)}" fill="transparent"/>
+      <circle class="dotc" cx="${n.p[0]}" cy="${n.p[1]}" r="${n.r}" fill="${n.c}" stroke="${pnl}" stroke-width=".008"/>
+      <text x="${n.k === "B" ? n.p[0] - n.r - .025 : n.p[0]}" y="${n.k === "B" ? n.p[1] + .02 : n.p[1] + n.r + (n.big ? .062 : .046)}" font-size="${n.big ? .06 : .04}" font-weight="${n.big ? 600 : 400}" text-anchor="${n.k === "B" ? "end" : "middle"}" fill="${n.big ? ink : mut}" stroke="${pnl}" stroke-width=".016" paint-order="stroke" style="font-family:var(--f-body);pointer-events:none">${n.l}</text></g>`).join("");
+  // legend, as in the paper
+  const LG = [["building", C.building], ["room", C.room], ["wall", C.wall], ["object", C.object], ["door", C.door], ["window", C.window]];
+  o += LG.map(([l, c], i) => `<g style="pointer-events:none"><circle cx="-1.0" cy="${.5 + i * .07}" r=".027" fill="${c}"/><text x="-.955" y="${.515 + i * .07}" font-size=".046" fill="${mut}" style="font-family:var(--f-body)">${l}</text></g>`).join("");
   svg.innerHTML = o;
   svg.querySelectorAll(".gn").forEach(g => { const n = at[g.dataset.k], dc = g.querySelector(".dotc");
-    g.addEventListener("mouseenter", () => { V.highlight(n); dc.setAttribute("stroke", tok("--ink")); dc.setAttribute("stroke-width", ".014"); });
+    g.addEventListener("mouseenter", () => { V.highlight(n); dc.setAttribute("stroke", ink); dc.setAttribute("stroke-width", ".014"); });
     g.addEventListener("mousemove", e => showTip(e, n.inst ? `${n.l} · instance ${n.inst} · ${n.pts.toLocaleString("en")} points` : n.wall != null ? `Wall W${n.wall} · ${wallLen(s.walls[n.wall]).toFixed(2)} m long` : n.op != null ? `${n.l} on W${s.ops[n.op].w} · ${opSize(s.ops[n.op])}` : n.l));
     g.addEventListener("mouseleave", () => { V.highlight(null); tip.hidden = true; dc.setAttribute("stroke", pnl); dc.setAttribute("stroke-width", ".008"); });
   });
