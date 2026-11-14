@@ -92,7 +92,9 @@ select{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background
 .views{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;touch-action:none}
 .views canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
 .pv{position:relative;aspect-ratio:1.23;z-index:1;min-width:0;background:transparent;outline:1px solid var(--line);outline-offset:0}
-.pv.graph{background:var(--panel)}
+.glegend{position:absolute;left:10px;right:10px;bottom:8px;display:flex;flex-wrap:wrap;gap:2px 8px;font-size:10.5px;color:var(--muted);pointer-events:none}
+.glegend span{display:inline-flex;align-items:center;gap:4px}
+.glegend i{width:8px;height:8px;border-radius:50%;display:inline-block}
 .pv .lab{position:absolute;left:10px;top:8px;right:40px;pointer-events:none;display:flex;flex-direction:column;line-height:1.15}
 .pv .lab b{font-family:var(--f-display);font-stretch:85%;font-size:14.5px;font-weight:700}
 .pv .lab span{font-size:11.5px;color:var(--muted)}
@@ -374,7 +376,7 @@ html{scroll-behavior:smooth}
     <div>
       <div class="p-shead"><div class="eyebrow">Interactive results · all 312 ScanNet scans</div>
       <h2>Every scan, from point cloud to energy model</h2>
-      <p>Every ScanNet scan processed by the pipeline: panoptic segmentation, wall and opening reconstruction, a closed solid, the EnergyPlus surface model and the scene graph. Pick a scan to rotate all five 3D views together.</p></div>
+      <p>Every ScanNet scan processed by the pipeline: panoptic segmentation, wall and opening reconstruction, a closed solid, the EnergyPlus surface model and the semantic graph placed in 3D. Pick a scan to rotate all six 3D views together.</p></div>
     </div>
     <div>
       <div class="figs" id="figs"></div>
@@ -429,7 +431,7 @@ html{scroll-behavior:smooth}
         <div class="pv" data-k="2"><div class="lab"><b>Classified cloud + model</b><span>points inside the wall wireframe</span></div><button class="ex" title="Enlarge" aria-label="Enlarge classified view">⤢</button></div>
         <div class="pv" data-k="3"><div class="lab"><b>Solid model</b><span>walls, slab, openings + objects</span></div><button class="ex" title="Enlarge" aria-label="Enlarge solid model">⤢</button></div>
         <div class="pv" data-k="4"><div class="lab"><b>Surface-based model</b><span>EnergyPlus surfaces, openings, objects</span></div><button class="ex" title="Enlarge" aria-label="Enlarge surface-based model">⤢</button></div>
-        <div class="pv graph" data-k="5"><svg class="g" id="graph" viewBox="-1.08 -0.98 2.16 1.98" role="img" aria-label="Scene graph"></svg><div class="lab"><b>Semantic graph</b><span>building, room, walls, openings, objects</span></div><button class="ex" title="Enlarge" aria-label="Enlarge scene graph">⤢</button></div>
+        <div class="pv" data-k="5"><div class="lab"><b>BEM and scene graph</b><span>surface model with the 3D semantic graph</span></div><div class="glegend"><span><i style="background:#1F2A33"></i>building</span><span><i style="background:#3D4A5F"></i>room</span><span><i style="background:#8C9AA5"></i>wall</span><span><i style="background:#A0613F"></i>object</span><span><i style="background:#E07B39"></i>door</span><span><i style="background:#4A97C9"></i>window</span></div><button class="ex" title="Enlarge" aria-label="Enlarge BEM and scene graph">⤢</button></div>
         <div class="loading" id="loading" hidden>Loading scan…</div>
       </div>
       <div class="bar">
@@ -438,7 +440,7 @@ html{scroll-behavior:smooth}
           <span><i style="background:#E07B39"></i>door</span><span><i style="background:#4A90C8"></i>window</span>
           <span><i style="background:#B8864F"></i>furniture &amp; objects</span><span><i style="background:#9467BD"></i>picture</span><span><i style="background:#20B2C4"></i>fixtures</span>
         </div>
-        <div class="hint">Drag to orbit · right-drag to pan · scroll to zoom · hover graph nodes to highlight them in 3D</div>
+        <div class="hint">Drag to orbit · right-drag to pan · scroll to zoom · the sixth view shows the semantic graph in the scene</div>
       </div>
       <div class="metrics" id="metrics"></div>
     </div>
@@ -459,7 +461,7 @@ html{scroll-behavior:smooth}
   </section>
 
   <footer class="about">
-    <div><h3>The six views</h3><p>All five 3D views share one camera. The point clouds are random subsets of about 45,000 points per scan with the ceiling removed. Walls, doors and windows come from the reconstructed model, and the surfaces are the ones written to the EnergyPlus input file.</p></div>
+    <div><h3>The six views</h3><p>All six 3D views share one camera. The point clouds are random subsets of about 45,000 points per scan with the ceiling removed. Walls, doors and windows come from the reconstructed model, and the surfaces are the ones written to the EnergyPlus input file.</p></div>
     <div><h3>Metrics</h3><p><b>Footprint IoU</b>: overlap of the reconstructed zone footprint with the reference footprint. <b>Floor-area, height and volume error</b>: signed relative error against the reference. <b>Wall distance</b>: median distance of wall-labelled points to their reconstructed wall plane.</p></div>
     <div><h3>Energy</h3><p>Each zone was simulated in EnergyPlus 24.2 with generic constructions, the Mannheim (DWD) weather file and ideal loads at 20/26 °C. Heating and cooling are annual zone loads; the per-m² values divide by the reconstructed floor area.</p></div>
   </footer>
@@ -660,48 +662,7 @@ function select(s){
 
 const tip = $("#tip");
 function showTip(e, t){ tip.textContent = t; tip.hidden = false; const w = tip.offsetWidth; tip.style.left = Math.min(e.clientX + 12, innerWidth - w - 8) + "px"; tip.style.top = (e.clientY + 14) + "px"; }
-function graph(s){
-  // Typed semantic graph as defined in the paper (Fig. 9h / Fig. 10): Building -> Room; Room -> Floor, Ceiling,
-  // walls (W0..Wn) and object instances; each wall -> the doors and windows it hosts.
-  const svg = $("#graph"), N = [], E = [];
-  const C = { building: "#1F2A33", room: "#3D4A5F", wall: "#9AABB6", object: "#A0613F", door: "#E07B39", window: "#4A97C9",
-              floor: "#D9CBA3", ceiling: "#D5DADF" };
-  const EC = { room: "#56606E", wall: "#AEBBC4", object: "#D2A88C", door: "#F0B48A", window: "#9CC5E3", slab: "#C9CED3" };
-  const pol = (r, a) => [r * Math.cos(a), r * Math.sin(a)];
-  N.push({ k: "B", p: [0, -.5], c: C.building, r: .068, l: "Building", big: 1 }, { k: "R", p: [0, 0], c: C.room, r: .052, l: "Room", big: 1 });
-  E.push(["B", "R", EC.room, .011]);
-  // walls on the outer ring, leaving the top free for the Building node
-  const nw = Math.max(s.walls.length, 1), nDoor = { door: 0, window: 0 };
-  s.walls.forEach((w, i) => {
-    const a = -Math.PI / 2 + (i + .5) * 2 * Math.PI / nw, p = pol(.6, a);
-    N.push({ k: "w" + i, p, c: C.wall, r: .024, l: "W" + i, wall: i, ang: a }); E.push(["R", "w" + i, EC.wall, .007]);
-    const hs = s.ops.map((o, j) => [o, j]).filter(([o]) => o.w === i);
-    hs.forEach(([o, j], n) => { const aa = a + (n - (hs.length - 1) / 2) * .42, q = [p[0] + .22 * Math.cos(aa), p[1] + .22 * Math.sin(aa)];
-      N.push({ k: "o" + j, p: q, c: C[o.t], r: .03, l: `${o.t} ${nDoor[o.t]++}`, op: j }); E.push(["w" + i, "o" + j, EC[o.t], .007]); });
-  });
-  // floor and ceiling next to the room
-  N.push({ k: "F", p: [-.15, .11], c: C.floor, r: .024, l: "Floor" }, { k: "C", p: [.17, .07], c: C.ceiling, r: .024, l: "Ceiling" });
-  E.push(["R", "F", EC.slab, .006], ["R", "C", EC.slab, .006]);
-  // object instances around the room, two staggered rings
-  const objs = s.insts.map((v, j) => [v, j + 1]).filter(([v]) => v[2]), no = Math.max(objs.length, 1);
-  objs.forEach(([v, id], i) => { const a = -Math.PI / 2 + .28 + (i + .5) * (2 * Math.PI - .56) / no, r = no > 14 ? (i % 2 ? .39 : .27) : .33;
-    N.push({ k: "i" + id, p: pol(r, a), c: C.object, r: .021, l: D.classes[v[0]] || "object", inst: id, pts: v[1] }); E.push(["R", "i" + id, EC.object, .006]); });
-  const at = Object.fromEntries(N.map(n => [n.k, n])), pnl = tok("--panel"), mut = tok("--muted"), ink = tok("--ink");
-  let o = E.map(([a, b, c, w]) => `<line x1="${at[a].p[0]}" y1="${at[a].p[1]}" x2="${at[b].p[0]}" y2="${at[b].p[1]}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`).join("");
-  o += N.map(n => `<g class="gn" data-k="${n.k}" style="cursor:${n.wall != null || n.op != null || n.inst ? "pointer" : "default"}">
-      <circle cx="${n.p[0]}" cy="${n.p[1]}" r="${Math.max(n.r, .045)}" fill="transparent"/>
-      <circle class="dotc" cx="${n.p[0]}" cy="${n.p[1]}" r="${n.r}" fill="${n.c}" stroke="${pnl}" stroke-width=".008"/>
-      <text x="${n.k === "B" ? n.p[0] - n.r - .025 : n.p[0]}" y="${n.k === "B" ? n.p[1] + .02 : n.p[1] + n.r + (n.big ? .062 : .046)}" font-size="${n.big ? .06 : .04}" font-weight="${n.big ? 600 : 400}" text-anchor="${n.k === "B" ? "end" : "middle"}" fill="${n.big ? ink : mut}" stroke="${pnl}" stroke-width=".016" paint-order="stroke" style="font-family:var(--f-body);pointer-events:none">${n.l}</text></g>`).join("");
-  // legend, as in the paper
-  const LG = [["building", C.building], ["room", C.room], ["wall", C.wall], ["object", C.object], ["door", C.door], ["window", C.window]];
-  o += LG.map(([l, c], i) => `<g style="pointer-events:none"><circle cx="-1.0" cy="${.5 + i * .07}" r=".027" fill="${c}"/><text x="-.955" y="${.515 + i * .07}" font-size=".046" fill="${mut}" style="font-family:var(--f-body)">${l}</text></g>`).join("");
-  svg.innerHTML = o;
-  svg.querySelectorAll(".gn").forEach(g => { const n = at[g.dataset.k], dc = g.querySelector(".dotc");
-    g.addEventListener("mouseenter", () => { V.highlight(n); dc.setAttribute("stroke", ink); dc.setAttribute("stroke-width", ".014"); });
-    g.addEventListener("mousemove", e => showTip(e, n.inst ? `${n.l} · instance ${n.inst} · ${n.pts.toLocaleString("en")} points` : n.wall != null ? `Wall W${n.wall} · ${wallLen(s.walls[n.wall]).toFixed(2)} m long` : n.op != null ? `${n.l} on W${s.ops[n.op].w} · ${opSize(s.ops[n.op])}` : n.l));
-    g.addEventListener("mouseleave", () => { V.highlight(null); tip.hidden = true; dc.setAttribute("stroke", pnl); dc.setAttribute("stroke-width", ".008"); });
-  });
-}
+function graph(s){ /* the semantic graph is drawn in 3D, in the sixth viewport */ }
 const wallLen = w => Math.hypot(w[2] - w[0], w[3] - w[1]);
 const opSize = o => `${Math.hypot(o.ab[2] - o.ab[0], o.ab[3] - o.ab[1]).toFixed(2)} × ${(o.z[1] - o.z[0]).toFixed(2)} m`;
 
@@ -709,13 +670,13 @@ const opSize = o => `${Math.hypot(o.ab[2] - o.ab[0], o.ab[3] - o.ab[1]).toFixed(
 const V = {
   cache: new Map(), U: { uSize: { value: .022 }, uScale: { value: 500 }, uHl: { value: 0 }, uDim: { value: new THREE.Color() } },
   init(){
-    this.host = $("#views"); this.cv = $("#gl"); this.pvs = $$(".pv").filter(p => +p.dataset.k < 5);
+    this.host = $("#views"); this.cv = $("#gl"); this.pvs = $$(".pv").filter(p => +p.dataset.k < 6);
     this.r = new THREE.WebGLRenderer({ canvas: this.cv, antialias: true }); this.r.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
     this.r.autoClear = false;
     this.cam = new THREE.PerspectiveCamera(34, 1.23, .05, 300); this.cam.up.set(0, 0, 1);
     this.ctl = new THREE.OrbitControls(this.cam, this.host); this.ctl.enableDamping = true; this.ctl.dampingFactor = .12; this.ctl.autoRotateSpeed = 1.6;
     this.ctl.addEventListener("change", () => this.dirty = true);
-    this.sc = [0, 1, 2, 3, 4].map(() => new THREE.Scene());
+    this.sc = [0, 1, 2, 3, 4, 5].map(() => new THREE.Scene());
     new ResizeObserver(() => this.resize()).observe(this.host); this.resize();
     $("#spin").addEventListener("click", e => { this.ctl.autoRotate = !this.ctl.autoRotate; e.currentTarget.setAttribute("aria-pressed", this.ctl.autoRotate); });
     $("#reset").addEventListener("click", () => this.frame());
@@ -725,8 +686,6 @@ const V = {
       this.host.classList.toggle("solo", on); $$(".pv").forEach(p => p.classList.toggle("on", on && p === pv)); b.textContent = on ? "⤡" : "⤢"; b.title = on ? "Back to all views" : "Enlarge";
       $$(".pv .ex").forEach(x => { if (x !== b) { x.textContent = "⤢"; x.title = "Enlarge"; } }); this.resize(); }));
     $$(".pv .ex").forEach(b => ["pointerdown", "wheel"].forEach(ev => b.addEventListener(ev, e => e.stopPropagation())));
-    $(".pv.graph").addEventListener("pointerdown", e => e.stopPropagation(), true);
-    $(".pv.graph").addEventListener("wheel", e => e.stopPropagation(), true);
     const theme = () => { this.theme(); if (cur) graph(cur); };
     this.theme();
     const loop = () => { requestAnimationFrame(loop); this.ctl.update(); if (this.dirty && tab === "explore") { this.render(); this.dirty = false; } }; loop();
@@ -756,7 +715,7 @@ const V = {
     this.build(s, buf); $("#loading").hidden = true; $("#loading").textContent = "Loading scan…";
   },
   build(s, buf){
-    this.sc.forEach(sc => { sc.traverse(o => { if (o.geometry) o.geometry.dispose(); }); sc.clear(); });
+    this.sc.forEach(sc => { sc.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && o.material.map) o.material.map.dispose(); }); sc.clear(); });
     const n = s.n, q = new Uint16Array(buf, 0, 3 * n), rgb = new Uint8Array(buf, 6 * n, 3 * n), sem = new Uint8Array(buf, 9 * n, n), ins = new Uint8Array(buf, 10 * n, n);
     const lo = s.lo, hi = s.hi, c = [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2]; this.c = c;
     const pos = new Float32Array(3 * n);
@@ -802,6 +761,15 @@ const V = {
     s.surf.forEach(f => { if (f.t !== "wall") return; const bm = new THREE.MeshBasicMaterial({ color: "#C9D0D8", transparent: true, opacity: .22, side: THREE.DoubleSide, depthWrite: false });
       const m = new THREE.Mesh(fan(f.q, c), bm); m.renderOrder = 2; this.sc[4].add(m); if (this.wallMesh[wi]) this.wallMesh[wi].surf = bm; wi++; });
     if (objG) { this.sc[3].add(pts(objG)); this.sc[4].add(pts(objG)); }
+    // panel 6 — BEM and scene graph: surface model + typed semantic graph in 3D
+    const g5 = this.sc[5];
+    g5.add(new THREE.LineSegments(eg.clone(), M.wire2));
+    s.floor.forEach(fl => { const sh = new THREE.Shape(); for (let i = 0; i < fl.length; i += 2) (i ? sh.lineTo : sh.moveTo).call(sh, fl[i] - c[0], fl[i + 1] - c[1]);
+      const g = new THREE.ShapeGeometry(sh); g.translate(0, 0, fz); g5.add(new THREE.Mesh(g, M.floorB)); });
+    s.surf.forEach(f => { if (f.t !== "wall") return; const m = new THREE.Mesh(fan(f.q, c), new THREE.MeshBasicMaterial({ color: "#C9D0D8", transparent: true, opacity: .18, side: THREE.DoubleSide, depthWrite: false })); m.renderOrder = 2; g5.add(m); });
+    s.ops.forEach(o => g5.add(new THREE.Mesh(fan(o.q, c), new THREE.MeshBasicMaterial({ color: o.t === "door" ? "#D96C2C" : "#3F7FC4", transparent: true, opacity: .75, side: THREE.DoubleSide, depthWrite: false }))));
+    if (objG) g5.add(pts(objG));
+    sceneGraph3D(g5, s, pos, ins, c);
     this.sc.forEach(sc => { sc.add(new THREE.HemisphereLight(0xffffff, 0x8a96a3, .78)); const dl = new THREE.DirectionalLight(0xffffff, .55); dl.position.set(-.45, -.65, .62); sc.add(dl); });
     this.size = [hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]];
     if (!this.framed || this.lastSize !== s.id) this.frame(); this.U.uHl.value = 0; this.dirty = true;
@@ -820,6 +788,50 @@ const V = {
     this.dirty = true;
   },
 };
+function sceneGraph3D(g5, s, pos, ins, c){
+  const C = { building: "#1F2A33", room: "#3D4A5F", wall: "#8C9AA5", object: "#A0613F", door: "#E07B39", window: "#4A97C9", floor: "#CDBF96", ceiling: "#B9C1C9" };
+  const EC = { room: "#3D4A5F", wall: "#7E8C97", object: "#C08A66", door: "#E07B39", window: "#4A97C9", slab: "#9AA3AB" };
+  const d = Math.hypot(s.hi[0] - s.lo[0], s.hi[1] - s.lo[1], s.hi[2] - s.lo[2]), H = s.H;
+  const fl = s.floor[0] || [], fx = [], fy = [];
+  for (let i = 0; i < fl.length; i += 2) { fx.push(fl[i]); fy.push(fl[i + 1]); }
+  const cx = fx.length ? fx.reduce((a, b) => a + b, 0) / fx.length : c[0], cy = fy.length ? fy.reduce((a, b) => a + b, 0) / fy.length : c[1];
+  const P = (x, y, z) => new THREE.Vector3(x - c[0], y - c[1], z - c[2]);
+  const nodes = [], edges = [];
+  const add = (k, p, col, r, label, big) => { nodes.push({ k, p, col, r, label, big }); return k; };
+  add("B", P(cx, cy, H * 1.42), C.building, .024, "Building", 1);
+  add("R", P(cx, cy, H * .62), C.room, .018, "Room", 1); edges.push(["B", "R", EC.room]);
+  add("F", P(cx, cy, 0.02), C.floor, .009, "Floor"); add("C", P(cx, cy, H), C.ceiling, .009, "Ceiling");
+  edges.push(["R", "F", EC.slab], ["R", "C", EC.slab]);
+  s.walls.forEach((w, i) => { add("w" + i, P((w[0] + w[2]) / 2, (w[1] + w[3]) / 2, w[5]), C.wall, .01, "W" + i); edges.push(["R", "w" + i, EC.wall]); });
+  const cnt = { door: 0, window: 0 };
+  s.ops.forEach((o, j) => { add("o" + j, P((o.ab[0] + o.ab[2]) / 2, (o.ab[1] + o.ab[3]) / 2, (o.z[0] + o.z[1]) / 2), C[o.t], .012, `${o.t} ${cnt[o.t]++}`); edges.push(["w" + o.w, "o" + j, EC[o.t]]); });
+  // object instances at the centroid of their points
+  const keep = new Set(s.insts.map((v, j) => v[2] ? j + 1 : 0).filter(Boolean)), sum = new Map();
+  for (let i = 0; i < ins.length; i++) { const k = ins[i]; if (!keep.has(k)) continue; const a = sum.get(k) || [0, 0, 0, 0]; a[0] += pos[3 * i]; a[1] += pos[3 * i + 1]; a[2] += pos[3 * i + 2]; a[3]++; sum.set(k, a); }
+  sum.forEach((a, k) => { add("i" + k, new THREE.Vector3(a[0] / a[3], a[1] / a[3], a[2] / a[3]), C.object, .008, ""); edges.push(["R", "i" + k, EC.object]); });
+  const at = Object.fromEntries(nodes.map(n => [n.k, n]));
+  // edges
+  const ev = [], ecol = [];
+  edges.forEach(([a, b, col]) => { const A = at[a].p, Bp = at[b].p, cc = new THREE.Color(col); ev.push(A.x, A.y, A.z, Bp.x, Bp.y, Bp.z); ecol.push(cc.r, cc.g, cc.b, cc.r, cc.g, cc.b); });
+  const eg = new THREE.BufferGeometry(); eg.setAttribute("position", new THREE.Float32BufferAttribute(ev, 3)); eg.setAttribute("color", new THREE.Float32BufferAttribute(ecol, 3));
+  const lines = new THREE.LineSegments(eg, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: .95, depthTest: false })); lines.renderOrder = 8; g5.add(lines);
+  // nodes and labels (always on top, as in the paper)
+  nodes.forEach(n => {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(n.r * d, 18, 12), new THREE.MeshBasicMaterial({ color: n.col, depthTest: false }));
+    m.position.copy(n.p); m.renderOrder = 9; g5.add(m);
+    if (n.label) { const sp = textSprite(n.label, n.big ? .05 * d : .032 * d, n.big); if (n.big) { sp.center.set(-.08 - n.r * 2, .5); sp.position.copy(n.p); } else sp.position.set(n.p.x, n.p.y, n.p.z + n.r * d * 1.4 + .016 * d); g5.add(sp); }
+  });
+}
+function textSprite(text, h, big){
+  const cv = document.createElement("canvas"), x = cv.getContext("2d"), fs = 64, font = `${big ? 700 : 600} ${fs}px "Source Sans 3", Arial, sans-serif`;
+  x.font = font; const w = Math.ceil(x.measureText(text).width) + 24; cv.width = w; cv.height = fs + 24;
+  x.font = font; x.textAlign = "center"; x.textBaseline = "middle"; x.lineJoin = "round";
+  x.lineWidth = 12; x.strokeStyle = "rgba(255,255,255,.95)"; x.strokeText(text, w / 2, cv.height / 2);
+  x.fillStyle = big ? "#1F2A33" : "#3A4553"; x.fillText(text, w / 2, cv.height / 2);
+  const tx = new THREE.CanvasTexture(cv); tx.anisotropy = 4;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, depthTest: false, transparent: true })); sp.renderOrder = 10;
+  sp.scale.set(h * w / cv.height, h, 1); return sp;
+}
 function box(a, b, nr, z0, z1, t0, t1){
   const Q = [[a[0] + nr[0] * t0, a[1] + nr[1] * t0], [b[0] + nr[0] * t0, b[1] + nr[1] * t0], [b[0] + nr[0] * t1, b[1] + nr[1] * t1], [a[0] + nr[0] * t1, a[1] + nr[1] * t1]];
   const Bt = Q.map(p => [p[0], p[1], z0]), T = Q.map(p => [p[0], p[1], z1]), quads = [[Bt[0], Bt[1], Bt[2], Bt[3]], [T[0], T[1], T[2], T[3]]], v = [];
