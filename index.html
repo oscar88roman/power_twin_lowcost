@@ -1,8 +1,8 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="light"><title>Power Twin · LC3D 2026</title><meta name="description" content="Towards Building Energy Digital Twins with a Low-Cost Portable Mobile Mapping System (Roman, Trybała, Farella, Remondino, LC3D 2026): the paper, section by section, and interactive results for all 312 ScanNet scans.">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="light"><title>Power Twin, LC3D 2026</title><meta name="description" content="Towards Building Energy Digital Twins with a Low-Cost Portable Mobile Mapping System (Roman, Trybała, Farella, Remondino, LC3D 2026): the paper, section by section, and interactive results for all 312 ScanNet scans.">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: dataset summary band (figures + distributions) -> tabbed workspace: Explorer (scan list | six synced views + metrics), Gallery, Table */
 :root{color-scheme:light;
@@ -189,6 +189,7 @@ html{scroll-behavior:smooth}
 .p-fig img{width:100%;height:auto;display:block;border-radius:4px;cursor:zoom-in;background:#fff}
 .p-fig figcaption{font-size:13.5px;color:var(--muted);line-height:1.45}
 .p-fig figcaption b{color:var(--ink);font-weight:600}
+.p-fig video{width:100%;height:auto;display:block;border-radius:4px;background:#000}
 .p-fig.narrow{max-width:820px;width:100%;margin-inline:auto}
 .p-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
 .p-two.wide-l{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
@@ -247,136 +248,279 @@ html{scroll-behavior:smooth}
 .p-eq{font-family:var(--f-mono);font-size:14px;background:var(--line2);border-radius:6px;padding:10px 14px;align-self:flex-start}
 @media (max-width:1000px){.p-cols{grid-template-columns:1fr}}
 
+
+/* ---------- classic paper-page layout ---------- */
+:root{--serif:"Source Serif 4",Georgia,"Times New Roman",serif;--paper-ink:#1d2329;--paper-muted:#5b6670;--link:#1f5d99}
+body{background:#fff}
+.wrap{max-width:none;gap:0}
+.pp-nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.96);border-bottom:1px solid #e6e8eb}
+.pp-navin{max-width:1080px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.pp-home{font-family:var(--serif);font-weight:600;font-size:17px;color:var(--paper-ink);text-decoration:none;margin-right:auto}
+.pp-links{display:flex;gap:4px 18px;flex-wrap:wrap}
+.pp-links a{color:var(--paper-muted);text-decoration:none;font-size:14.5px}
+.pp-links a:hover{color:var(--link)}
+.pp-hero{box-sizing:border-box;width:100%;max-width:900px;margin:0 auto;padding:64px 24px 28px;text-align:center}
+.pp-venue{margin:0 0 14px;font-size:14px;letter-spacing:.04em;color:var(--paper-muted)}
+.pp-title{font-family:var(--serif);font-size:clamp(28px,4vw,42px);font-weight:600;line-height:1.18;color:var(--paper-ink);letter-spacing:-.005em;margin:0 auto;max-width:28ch;font-stretch:100%}
+.pp-authors{margin:22px 0 4px;font-size:19px;color:var(--link)}
+.pp-aff{margin:0;font-size:15px;color:var(--paper-muted)}
+.pp-btns{margin:26px 0 0;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.pp-btns a{display:inline-block;padding:8px 16px;border:1px solid #c9ced4;border-radius:4px;color:var(--paper-ink);text-decoration:none;font-size:15px;background:#fff}
+.pp-btns a:hover{border-color:var(--link);color:var(--link)}
+.pp-btns a:first-child{background:#2a3036;border-color:#2a3036;color:#fff}
+.pp-teaser{box-sizing:border-box;width:100%;max-width:1080px;margin:18px auto 0;padding:0 24px}
+.wrap>*{min-width:0}
+.pp-col{display:block;box-sizing:border-box;width:100%;max-width:820px;margin:0 auto;padding:0 24px;font-family:var(--serif);font-size:17.5px;line-height:1.65;color:var(--paper-ink)}
+.pp-sec{padding:44px 0 8px;scroll-margin-top:60px}
+.pp-sec h2{font-family:var(--serif);font-size:28px;font-weight:600;font-stretch:100%;margin:0 0 18px;padding-bottom:8px;border-bottom:1px solid #e3e6e9;color:var(--paper-ink)}
+.pp-sec h2.pp-c{text-align:center;border-bottom:0;padding-bottom:0}
+.pp-sec h3{font-family:var(--serif);font-size:20.5px;font-weight:600;font-stretch:100%;margin:34px 0 10px;color:var(--paper-ink)}
+.pp-sec p{margin:0 0 14px}
+.pp-sec ul,.pp-sec ol{margin:0 0 16px;padding-left:26px}
+.pp-sec li{margin-bottom:6px}
+.pp-sec a{color:var(--link)}
+.pp-note{font-size:16px;color:var(--paper-muted);border-left:3px solid #d5dbe1;padding-left:14px}
+.pp-eq{text-align:center;font-size:19px;margin:16px 0 18px!important}
+.pp-fig{margin:26px 0 28px;font-family:var(--f-body)}
+.pp-fig img,.pp-fig video{width:100%;height:auto;display:block;cursor:zoom-in;background:#fff}
+.pp-fig video{cursor:auto;background:#000;border-radius:2px}
+.pp-fig figcaption{margin-top:9px;font-size:14.5px;line-height:1.45;color:var(--paper-muted)}
+.pp-fig figcaption b{color:var(--paper-ink);font-weight:600}
+.pp-teaser figcaption{text-align:center;max-width:820px;margin-left:auto;margin-right:auto}
+.pp-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start;margin:0 -60px}
+.pp-row .pp-fig{margin:18px 0 22px}
+.pp-tables{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px;align-items:start;margin:18px -60px 6px}
+.pp-tbl{width:100%;border-collapse:collapse;font-family:var(--f-body);font-size:14.5px;line-height:1.4;border-top:1.5px solid var(--paper-ink);border-bottom:1.5px solid var(--paper-ink);margin:0 0 18px}
+.pp-tbl caption{caption-side:top;text-align:left;font-size:14px;color:var(--paper-muted);padding:0 0 8px}
+.pp-tbl caption b{color:var(--paper-ink)}
+.pp-tbl th{text-align:left;font-weight:600;padding:7px 8px;border-bottom:1px solid var(--paper-ink);position:static;background:none;color:var(--paper-ink);box-shadow:none;cursor:default;font-size:14px}
+.pp-tbl td{padding:6px 8px;border:0;text-align:left;font-family:var(--f-body)!important;white-space:normal}
+.pp-tbl th{white-space:normal}
+.pp-tbl-c{max-width:560px}
+.pp-tbl-c td:last-child{text-align:right;white-space:nowrap}
+.pp-bib{position:relative;background:#f6f7f8;border:1px solid #e3e6e9;border-radius:4px;margin:6px 0 20px}
+.pp-bib pre{margin:0;padding:14px 16px;font-family:var(--f-mono);font-size:13px;line-height:1.55;overflow-x:auto}
+.pp-copy{position:absolute;top:8px;right:8px;border:1px solid #c9ced4;background:#fff;border-radius:4px;padding:3px 10px;font-size:13px;cursor:pointer;font-family:var(--f-body)}
+.pp-refs{font-size:15.5px;line-height:1.5}
+.pp-ack{font-size:15px;color:var(--paper-muted);margin-top:18px!important}
+.pp-foot{max-width:820px;margin:40px auto 0;padding:22px 24px 40px;border-top:1px solid #e3e6e9;text-align:center;font-size:13.5px;color:var(--paper-muted)}
+.pp-foot a{color:var(--paper-muted)}
+/* explorer section in the same spirit */
+.explorer-sec{box-sizing:border-box;width:100%;max-width:1180px;margin:30px auto 0;padding:44px 24px 10px;border-top:0;scroll-margin-top:60px}
+.explorer-sec .p-shead{max-width:820px}
+.explorer-sec .p-shead h2{font-family:var(--serif);font-size:28px;font-weight:600;font-stretch:100%;color:var(--paper-ink)}
+.explorer-sec .p-shead p{font-family:var(--serif);font-size:17px;color:var(--paper-ink);line-height:1.6}
+.explorer-sec .chip{border-radius:4px}
+.explorer-sec .btn{border-radius:4px}
+.explorer-sec .views{border-radius:2px}
+@media (max-width:980px){.pp-row,.pp-tables{margin-left:0;margin-right:0}}
+@media (max-width:720px){.pp-navin{flex-wrap:nowrap;gap:14px}.pp-links{flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;scrollbar-width:none}.pp-row,.pp-tables{grid-template-columns:minmax(0,1fr)}.pp-tbl{font-size:13.5px}.pp-tbl td,.pp-tbl th{padding:5px 6px}.pp-col{font-size:16.5px}.pp-hero{padding-top:40px}}
 </style></head><body>
 
 <div class="wrap">
-<nav class="p-nav" aria-label="Sections"><div class="in">
-  <b>Power Twin · LC3D 2026</b>
-  <a href="#abstract">Abstract</a><a href="#introduction" class="hide-s">1 Introduction</a><a href="#methodology">3 Methodology</a><a href="#results">4 Results</a><a href="#case-study" class="hide-s">5 Case study</a><a href="#conclusions" class="hide-s">6 Conclusions</a><a href="#explorer">All 312 scans</a><a href="#cite">Cite</a>
+<nav class="pp-nav" aria-label="Sections"><div class="pp-navin">
+  <a class="pp-home" href="#top">Power Twin</a>
+  <span class="pp-links"><a href="#abstract">Abstract</a><a href="#methodology">Method</a><a href="#results">Results</a><a href="#case-study">Case study</a><a href="#media">Videos</a><a href="#cite">Cite</a><a href="#explorer">All 312 scans</a></span>
 </div></nav>
-<header class="p-hero">
-  <div class="p-venue"><span>ISPRS · LC3D 2026</span><span class="alt">Power Twin project</span></div>
-  <h1 class="p-title">Towards Building Energy Digital Twins with a <em>Low-Cost Portable Mobile Mapping System</em></h1>
-  <div class="p-authors"><span>Oscar Roman</span><span>Paweł Trybała</span><span>Elisa Mariarosaria Farella</span><span>Fabio Remondino</span></div>
-  <div class="p-aff">3D Optical Metrology (3DOM) unit, Bruno Kessler Foundation (FBK), Trento, Italy</div>
-  <div class="p-btns">
-    <a class="p-btn" href="#explorer"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M4 9l4 4 4-4"/></svg>Interactive results: 312 scans</a>
-    <a class="p-btn o" href="https://powertwin.fbk.eu/" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12L12 4M6 4h6v6"/></svg>Power Twin project</a>
-    <a class="p-btn o" href="https://3dom.fbk.eu" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12L12 4M6 4h6v6"/></svg>3DOM – FBK</a>
-    <a class="p-btn o" href="#cite"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M4 9l4 4 4-4"/></svg>BibTeX</a>
-  </div>
+
+<header class="pp-hero" id="top">
+  <p class="pp-venue">ISPRS LC3D 2026</p>
+  <h1 class="pp-title">Towards Building Energy Digital Twins with a Low-Cost Portable Mobile Mapping System</h1>
+  <p class="pp-authors">Oscar Roman, Paweł Trybała, Elisa Mariarosaria Farella, Fabio Remondino</p>
+  <p class="pp-aff">3D Optical Metrology (3DOM) unit, Bruno Kessler Foundation (FBK), Trento, Italy</p>
+  <p class="pp-btns">
+    <a href="#explorer">Results for 312 scans</a>
+    <a href="#media">Videos</a>
+    <a href="https://powertwin.fbk.eu/" target="_blank" rel="noopener">Power Twin project</a>
+    <a href="#cite">BibTeX</a>
+  </p>
 </header>
-<section class="p-sec" id="abstract">
-  <div class="p-shead"><div class="eyebrow">Abstract</div><h2>From a low-cost walk-through to a simulation-ready building model</h2></div>
-  <p class="p-abs">Building Energy Digital Twins need structured, simulation-ready representations that integrate geometry, topology, semantics, thermal properties and energy-related systems. For existing buildings these are still produced largely by hand, especially the identification, 3D localization and parameterization of energy-relevant devices. We present a <b>mapping-to-BIM/BEM workflow</b> that generates simulation-ready Building Energy Models directly from <b>low-cost mobile mapping data</b>. Structural geometry and spatial organization are reconstructed from 3D point clouds, while energy-related devices are detected in registered multi-view imagery and consolidated into unique 3D instances through cross-view semantic and geometric consistency. Technical information on device nameplates is read with OCR and attached to the corresponding physical instance. Spaces, devices and attributes are integrated into a <b>typed semantic graph</b>, which is translated into <b>EnergyPlus epJSON</b> and a <b>BIM</b> environment.</p>
-  <div class="p-kpis">
-    <div class="p-kpi"><b>311<small>/312</small></b><span>ScanNet scans give a valid EnergyPlus model</span></div>
-    <div class="p-kpi"><b>87–94<small>%</small></b><span>IoU for floor, ceiling and wall</span></div>
-    <div class="p-kpi"><b>54.0<small>%</small></b><span>instance-level F1 for energy devices (best method)</span></div>
-    <div class="p-kpi"><b>92<small>%</small></b><span>nameplate parameters read correctly by OCR</span></div>
-    <div class="p-kpi"><b>~6<small> min</small></b><span>recognition and fusion per scene on a laptop GPU</span></div>
+
+<figure class="pp-fig pp-teaser"><img src="assets/fig3_overview.webp" alt="Workflow overview, from point cloud to BIM and BEM" loading="lazy"><figcaption>From a low-cost survey to an energy model: input point cloud and detections (a), 3D devices and panoptic segmentation (b), solid model (c), surface-based model (d), semantic graph (e), BIM (f) and BEM (g).</figcaption></figure>
+
+<main class="pp-col">
+<section id="abstract" class="pp-sec">
+  <h2 class="pp-c">Abstract</h2>
+  <p>Building Energy Digital Twins need structured, simulation-ready representations that bring together geometry, topology, semantics, thermal properties and energy-related systems. For existing buildings these models are still made largely by hand, and the slowest part is usually finding, locating and describing the energy-relevant devices. In this paper we present a mapping-to-BIM/BEM workflow that produces simulation-ready Building Energy Models directly from low-cost mobile mapping data. Structural geometry and the spatial layout are reconstructed from 3D point clouds. Energy-related devices are detected in registered multi-view images and merged into single 3D instances by checking that the views agree, both semantically and geometrically. The text on device nameplates is read with OCR and attached to the matching physical device. Spaces, devices and their attributes are then stored in a typed semantic graph, which we translate into EnergyPlus epJSON and into a BIM environment.</p>
+  <p class="pp-note">In short: on 312 ScanNet scans, 311 gave a valid EnergyPlus model; floor, ceiling and wall reach 87 to 94% IoU; the best detector setup reaches 54.0% instance-level F1; OCR read 92% of nameplate parameters correctly; and one scene takes about six minutes on a laptop GPU.</p>
+</section>
+
+<section id="introduction" class="pp-sec">
+  <h2>1&ensp;Introduction</h2>
+  <p>Much of Europe's building stock is old and uses a lot of energy, and retrofitting it at scale depends on having reliable digital models of what is actually there. At the moment, energy-relevant components are usually surveyed on site by experts and then modelled by hand.</p>
+  <p>A Building Energy Model (BEM) is the part of an Energy Digital Twin that runs the simulation: watertight B-Rep geometry with semantics, topology, materials, systems and, later, operational data. Producing BEMs is still poorly automated, and locating and describing the energy devices in a building is the hardest step to automate.</p>
+  <p>Low-cost indoor mobile mapping gives us georeferenced images, camera poses and point clouds, and current vision models can recognise and locate much of what those data contain. This work builds on our earlier Scan-to-EDT workflow. Here we start from raw STELVIO data and end with a model that EnergyPlus can simulate. Once live sensor data are connected, this becomes the first step towards a full Energy Digital Twin. In practice, the workflow</p>
+  <ul>
+    <li>reconstructs the building geometry from the 3D data,</li>
+    <li>detects energy-relevant devices in the images and places each one in 3D,</li>
+    <li>reads technical parameters from the images, and</li>
+    <li>links everything to rooms, surfaces and thermal zones in a typed semantic graph.</li>
+  </ul>
+</section>
+
+<section id="related" class="pp-sec">
+  <h2>2&ensp;Related work</h2>
+  <p><b>Low-cost portable mapping.</b> Vision-based and multi-sensor systems such as GuPho, Ant3D and STELVIO are practical alternatives to terrestrial laser scanning, especially indoors and in narrow spaces.</p>
+  <p><b>Locating objects in 3D.</b> Volumetric, point-based and projection-based methods, more recently extended to semantic and language-driven 3D grounding.</p>
+  <p><b>Recognising energy devices.</b> Devices and HVAC parts are often hidden or blend into their surroundings. Combining 2D vision-language models with a 3D reconstruction helps to locate them.</p>
+  <p><b>Scene graphs.</b> Hierarchical SLAM graphs, 3D dynamic scene graphs and IFC-based graphs organise spaces and objects into digital twin models that can be queried.</p>
+</section>
+
+<section id="methodology" class="pp-sec">
+  <h2>3&ensp;Method</h2>
+  <p>The workflow has six stages, shown in Figure 1.</p>
+  <figure class="pp-fig"><img src="assets/fig1_workflow.webp" alt="Figure 1: The proposed mapping-to-BIM/BEM workflow" loading="lazy"><figcaption><b>Figure 1.</b> The proposed mapping-to-BIM/BEM workflow.</figcaption></figure>
+  <ol>
+    <li><b>Data acquisition.</b> STELVIO, a stereo-visual-LiDAR-inertial system, records a dense RGB point cloud, the camera trajectory and the raw images in one SLAM frame.</li>
+    <li><b>Structural 3D reconstruction.</b> Superpoint Transformer labels floor, ceiling, wall, column and openings; RANSAC, DBSCAN and rasterization in the wall plane split them into instances.</li>
+    <li><b>Device recognition.</b> Open-vocabulary detectors and segmenters look for lights, radiators, sockets, sensors and HVAC units, prompted by class names.</li>
+    <li><b>Multi-view 3D instances.</b> Masks are projected back into 3D. Each point gets the class most views agree on, and simple geometric rules remove implausible instances.</li>
+    <li><b>Technical attributes.</b> GLM-OCR reads nameplates into parameter, value and unit, linked to the device, its room and its thermal zone.</li>
+    <li><b>BEM generation.</b> Spaces, elements, surfaces and devices go into a typed semantic graph, exported to EnergyPlus epJSON and to Revit.</li>
+  </ol>
+
+  <h3>3.1&ensp;Acquisition with STELVIO</h3>
+  <p>STELVIO is our in-house mapping system. It combines stereo cameras, a LiDAR and an IMU in a factor-graph framework, and outputs a dense RGB point cloud, the camera trajectory and the raw images, all in the same SLAM frame. Because images and points share one frame, we can project detections from the images into 3D and reconstruct device instances from several views.</p>
+
+  <h3>3.2&ensp;Structural 3D reconstruction</h3>
+  <p><b>Semantic labelling.</b> A Superpoint Transformer pretrained on ScanNet labels each point as floor, ceiling, wall, column, opening or other. Where the network gives no answer, we fall back on point normals from PCA.</p>
+  <p><b>Instance segmentation.</b> Floors and ceilings are separated by height clustering and DBSCAN, walls by iterative RANSAC, and columns by how linear and vertical they are. Openings are refined by rasterizing each wall plane and flood-filling it.</p>
+  <p><b>Panoptic encoding.</b> Every element gets an identifier made of its class and instance. Each point keeps its labels, colour, normal and a few local geometric descriptors.</p>
+
+  <h3>3.3&ensp;Recognising energy devices in the images</h3>
+  <p>We search the registered RGB images using a few synonyms for each device class (Table 1) and compare four strategies (Table 2). A, B and D run a detector first and then segment; C segments first and then classifies. Figure 2 shows some detections with Method D.</p>
+  <div class="pp-tables">
+    <table class="pp-tbl"><caption><b>Table 1.</b> Class prompts for the open-vocabulary detectors.</caption><thead><tr><th>Category</th><th>Prompts</th></tr></thead><tbody>
+      <tr><td>Lighting</td><td><em>light fixtures, ceiling lights</em></td></tr>
+      <tr><td>Heating</td><td><em>radiators, heaters, boilers, water heaters</em></td></tr>
+      <tr><td>Electrical</td><td><em>power outlets, wall sockets</em></td></tr>
+      <tr><td>Sensors / controls</td><td><em>detector, thermostat, switch</em></td></tr>
+      <tr><td>Devices</td><td><em>electric devices, monitors</em></td></tr>
+      <tr><td>HVAC</td><td><em>HVAC unit, ventilation device</em></td></tr>
+    </tbody></table>
+    <table class="pp-tbl"><caption><b>Table 2.</b> Evaluated 2D-to-3D labelling strategies.</caption><thead><tr><th>Method</th><th>Strategy</th><th>Configuration</th></tr></thead><tbody>
+      <tr><td>A</td><td>Detector-first</td><td>YOLO-World + SAM2</td></tr>
+      <tr><td>B</td><td>Detector-first</td><td>YOLO-World + SAM3</td></tr>
+      <tr><td>C</td><td>Segment-first</td><td>SAM3 + YOLO-World</td></tr>
+      <tr><td>D</td><td>Detector-first, open-vocabulary</td><td>GroundingDINO + SAM2</td></tr>
+    </tbody></table>
   </div>
+  <figure class="pp-fig"><img src="assets/fig2_detections.webp" alt="Figure 2: Examples of object detection using Method D" loading="lazy"><figcaption><b>Figure 2.</b> Examples of object detection using Method D and corresponding prompts from Table 1.</figcaption></figure>
+
+  <h3>3.4&ensp;Multi-view agreement and 3D instances</h3>
+  <p>Mask pixels are projected back into 3D using the depth, the camera intrinsics and the pose. For a 3D point <i>p</i> and a class <i>c</i>, we count the views in which <i>p</i> is visible and falls inside a mask of class <i>c</i>:</p>
+  <p class="pp-eq">S<sub>c</sub>(p) = Σ<sub>i=1…N</sub> I<sub>i</sub>(p, c)</p>
+  <p>The point takes the class with the most support, but only if enough views agree. Labelled points are then grouped into device instances and filtered by height, distance to the wall, size and mask area.</p>
+
+  <h3>3.5&ensp;Checking the instances in 3D</h3>
+  <p>Each predicted instance is matched one-to-one with a manually placed reference. We score location and class separately, and refine the matched instances using all the views that saw them. The figure at the top of this page gives an overview of the whole chain on one scene.</p>
+
+  <h3>3.6&ensp;Reading device parameters</h3>
+  <p>GLM-OCR reads the equipment nameplates. We parse the text into parameter, value and unit (rated power, voltage, flow rate, model and so on), convert it to EnergyPlus conventions and write it into the matching epJSON fields. Each value stays linked to its device, its room and its thermal zone.</p>
+
+  <h3>3.7&ensp;Solid model and semantic graph</h3>
+  <p>The reconstructed geometry is first turned into a 3D solid model, then into volumetric and surface-based topological models with their graph. From there we export a BIM and an EnergyPlus BEM. The graph keeps geometry, topology, semantics, devices and energy data together in one multi-level structure.</p>
 </section>
-<section class="p-sec" id="introduction">
-  <div class="p-shead"><div class="eyebrow">1 · Introduction</div><h2>Why automate the path from survey to energy model</h2><p>Europe’s building stock is ageing and inefficient, and scaling retrofit needs reliable digitalization. Today, energy-relevant components are still surveyed by experts on site and modelled by hand.</p></div>
-  <div class="p-two">
-    <div class="p-text">
-      <p>Building Energy Models (BEMs) are the simulation-active layer of Energy Digital Twins: watertight B-Rep geometry enriched with semantics, topology, materials, systems and operational data. Creating them remains poorly automated, especially locating and characterising energy-related devices.</p>
-      <p>Low-cost indoor mobile mapping gives spatially referenced images, camera poses and point clouds; visual AI can identify, localize and structure what they contain. This work builds on our Scan-to-EDT workflow and turns raw data from the STELVIO system into simulation-ready energy models, a first step towards Energy Digital Twins once sensor data are connected.</p>
-    </div>
-    <div class="p-card"><b>1.1 Aim of the study: one integrated workflow</b>
-      <ul class="p-list">
-        <li>building geometry is reconstructed from 3D data;</li>
-        <li>energy-relevant devices are detected in multi-view imagery and persistently localized in 3D;</li>
-        <li>technical parameters are extracted from imagery;</li>
-        <li>all information is linked to rooms, surfaces and thermal zones through a typed semantic graph.</li>
-      </ul>
-    </div>
-  </div>
+
+<section id="results" class="pp-sec">
+  <h2>4&ensp;Results on ScanNet</h2>
+  <p>We benchmarked device recognition and structural reconstruction on 312 ScanNet scans. OCR and the full workflow were tested on data we acquired ourselves (Section 5).</p>
+
+  <h3>4.1&ensp;Recognising devices in the images</h3>
+  <p>At image level, Method C finds the most devices (73.4% recall) but at 49.5% precision. A and B are the most precise (79.3% and 78.6%) but find only about 35% of the devices. At instance level, after geometric filtering, A does best with 54.0% F1 (precision 56.6%, recall 51.7%), followed by B (51.7%), C (49.7%) and D (42.6%).</p>
+  <div class="pp-row"><figure class="pp-fig"><img src="assets/fig4_image_level.webp" alt="Figure 4: Image-level evaluation of the detection methods" loading="lazy"><figcaption><b>Figure 4.</b> Image-level evaluation of the detection methods.</figcaption></figure><figure class="pp-fig"><img src="assets/fig5_instance_level.webp" alt="Figure 5: Performance of 3D instance reconstruction" loading="lazy"><figcaption><b>Figure 5.</b> Performance of 3D instance reconstruction.</figcaption></figure></div>
+  <p>Most remaining errors happen when a device looks like its background, when objects are small or vary a lot in appearance, or when our classes do not match the ScanNet ones. Figure 6 shows typical cases.</p>
+  <figure class="pp-fig"><img src="assets/fig6_failures.webp" alt="Figure 6: Common issues in automatic detection" loading="lazy"><figcaption><b>Figure 6.</b> Common issues in automatic detection.</figcaption></figure>
+
+  <h3>4.2&ensp;Structural 3D reconstruction</h3>
+  <p>All 312 scans went through the pipeline. Floor, ceiling and wall reach 87 to 94% IoU. Openings and columns are still the weakest classes, at 46 to 59%.</p>
+  <figure class="pp-fig"><img src="assets/fig7_structural.webp" alt="Figure 7: Per-class reconstruction metrics" loading="lazy"><figcaption><b>Figure 7.</b> Per-class reconstruction metrics.</figcaption></figure>
+
+  <h3>4.3&ensp;Run time and memory</h3>
+  <p>Method D gives the best balance, at 0.66 s per frame, 4.66 instances per second and about 3.56 GB of memory. Method A uses the least memory (2.29 GB). On a laptop with an RTX 4050, recognition and fusion take about 6 minutes per scene.</p>
+  <figure class="pp-fig"><img src="assets/fig8_compute.webp" alt="Figure 8: Computational efficiency of the evaluated configurations" loading="lazy"><figcaption><b>Figure 8.</b> Computational efficiency of the evaluated configurations.</figcaption></figure>
+
+  <h3>4.4&ensp;Semantic graph and BEM</h3>
+  <p>The nodes of the graph are spaces, building elements and devices, and the edges are spatial or functional relations that we have checked. Every device is linked to its room, the surface it sits on and its thermal zone.</p>
+  <figure class="pp-fig"><img src="assets/fig9_graph_steps.webp" alt="Figure 9: Steps from the point cloud to the typed semantic graph" loading="lazy"><figcaption><b>Figure 9.</b> Steps from the initial point cloud representation to the typed semantic graph used for BEM and EDTs generation.</figcaption></figure>
+  <figure class="pp-fig"><img src="assets/fig10_scenes.webp" alt="Figure 10: Reconstruction stages for three scenes" loading="lazy"><figcaption><b>Figure 10.</b> Representative reconstruction stages for three scenes, showing the geometric processing from the input scene to the final BEM and scene graph.</figcaption></figure>
+
+  <h3>4.5&ensp;From nameplate images to epJSON</h3>
+  <p>We tested the OCR step on seven boiler and water-heater nameplates. It read 48 of the 52 energy-relevant parameters correctly (92%). Most of the mistakes came from a single plate that was photographed at low resolution and at a steep angle.</p>
+  <figure class="pp-fig"><img src="assets/fig11_ocr.webp" alt="Figure 11: OCR-assisted mapping of nameplate data to epJSON" loading="lazy"><figcaption><b>Figure 11.</b> Example of OCR-assisted mapping of image-extracted nameplate data to EnergyPlus epJSON parameters.</figcaption></figure>
+
+  <h3>4.6&ensp;Energy simulations</h3>
+  <p>Each zone was simulated in EnergyPlus 24.2 with generic constructions, the Mannheim (DWD) weather file and ideal loads with set-points of 20 and 26 °C. The volume error follows the footprint (correlation 0.87) and hardly depends on the height (0.04), so the most useful next step is to close the footprint better in rooms that were only partly scanned.</p>
+  <table class="pp-tbl pp-tbl-c"><caption><b>Table 3.</b> Geometry and simulation results over the 312 scans (medians).</caption><tbody>
+    <tr><td>Scans that simulate without severe errors</td><td>311 of 312 (99.7%)</td></tr>
+    <tr><td>Footprint IoU</td><td>0.81</td></tr>
+    <tr><td>Distance of wall points to their wall plane</td><td>3.2 cm</td></tr>
+    <tr><td>Floor-area error / volume error</td><td>9.6% / 11.1%</td></tr>
+    <tr><td>Height error</td><td>4.2%</td></tr>
+  </tbody></table>
 </section>
-<section class="p-sec" id="related">
-  <div class="p-shead"><div class="eyebrow">2 · Related work</div><h2>Where this work sits</h2></div>
-  <div class="p-cols">
-    <div class="p-card"><b>2.1 Low-cost portable mapping</b><span>Vision-based and multi-sensor systems such as GuPho, Ant3D and STELVIO offer flexible alternatives to terrestrial laser scanning in indoor and narrow spaces.</span></div>
-    <div class="p-card"><b>2.2 Object 3D localization</b><span>Volumetric, point-based and projection-based methods, now extended to semantic and language-conditioned 3D grounding.</span></div>
-    <div class="p-card"><b>2.3 Visual recognition of energy devices</b><span>Devices and HVAC components are often occluded or look like their surroundings; coupling 2D vision-language models with 3D reconstruction localizes them.</span></div>
-    <div class="p-card"><b>2.4 Scene graph representation</b><span>Hierarchical SLAM graphs, 3D dynamic scene graphs and IFC-based graphs organize spaces and objects into queryable digital twin models.</span></div>
-  </div>
+
+<section id="case-study" class="pp-sec">
+  <h2>5&ensp;Case study: a flat surveyed with STELVIO</h2>
+  <p>We surveyed a real flat of six rooms (about 80 m²) with STELVIO and ran the whole workflow on it. The survey gave 447 registered images and about 19 million points, with a median point spacing of around 5 mm. The final graph has 70 nodes and 78 edges. 86.7% of the devices were seen from more than one view, and radiators were detected with 83.3% precision, 55.6% recall and 66.7% F1.</p>
+  <div class="pp-row"><figure class="pp-fig"><img src="assets/fig12_dataset.webp" alt="Figure 12: The dataset used for validation" loading="lazy"><figcaption><b>Figure 12.</b> The dataset used for validation: (a) top view, (b) point cloud and STELVIO trajectory, (c) examples of acquired images.</figcaption></figure><figure class="pp-fig"><img src="assets/fig13_case_detections.webp" alt="Figure 13: Object detection on case study frames" loading="lazy"><figcaption><b>Figure 13.</b> Object detection on the example case study frames.</figcaption></figure></div>
+  <div class="pp-row"><figure class="pp-fig"><img src="assets/fig14_case_models.webp" alt="Figure 14: Images from the complete workflow" loading="lazy"><figcaption><b>Figure 14.</b> Images from the complete workflow: (a) solid model; (b) BIM; (c) surface-based model with semantic room classification; and (d) BEM with thermal boundaries and building-service devices.</figcaption></figure><figure class="pp-fig"><img src="assets/fig15_dynamo.webp" alt="Figure 15: Dynamo visualization" loading="lazy"><figcaption><b>Figure 15.</b> Dynamo visualization of the space topology, scene graph and temperature.</figcaption></figure></div>
 </section>
-<section class="p-sec" id="methodology">
-  <div class="p-shead"><div class="eyebrow">3 · Methodology</div><h2>Six stages from raw observations to an energy-oriented building graph</h2><p>(i) data acquisition, (ii) structural 3D reconstruction, (iii) image-based device recognition, (iv) multi-view instance reconstruction, (v) technical attribute extraction and (vi) graph-based BEM generation.</p></div>
-  <div class="p-two wide-l"><figure class="p-fig"><img src="assets/fig1_workflow.webp" alt="Figure 1: The proposed mapping-to-BIM/BEM workflow" loading="lazy"><figcaption><b>Figure 1.</b> The proposed mapping-to-BIM/BEM workflow.</figcaption></figure><ol class="p-steps">
-      <li><div><b>Data acquisition</b><span>STELVIO (stereo-visual-LiDAR-inertial) outputs a dense RGB point cloud, the camera trajectory and raw imagery in one SLAM frame.</span></div></li>
-      <li><div><b>Structural 3D reconstruction</b><span>Superpoint Transformer labels floor, ceiling, wall, column and openings; RANSAC, DBSCAN and wall-plane rasterization split them into instances.</span></div></li>
-      <li><div><b>Image-based device recognition</b><span>Open-vocabulary detectors and segmenters find lights, radiators, sockets, sensors and HVAC units from class prompts.</span></div></li>
-      <li><div><b>Multi-view 3D instance reconstruction</b><span>Masks are back-projected with depth and pose; cross-view support votes each point's class and geometric priors remove implausible instances.</span></div></li>
-      <li><div><b>Technical attribute extraction</b><span>GLM-OCR reads nameplates into parameter–value–unit tuples, linked to the device, its room and thermal zone.</span></div></li>
-      <li><div><b>Graph-based BEM generation</b><span>Spaces, elements, surfaces and devices form a typed semantic graph, exported to EnergyPlus epJSON and to Revit.</span></div></li>
-    </ol></div>
-  <div class="p-sub"><h3><i>3.1</i>STELVIO mobile mapping acquisition</h3><p>The in-house STELVIO system combines stereo cameras, LiDAR and an IMU in a factor-graph framework. It outputs dense RGB point clouds, the camera trajectory and raw imagery in the SLAM frame: the basis for image-to-3D reprojection and multi-view instance reconstruction.</p></div>
-  <div class="p-sub"><h3><i>3.2</i>Structural 3D reconstruction</h3><div class="p-cols p-cols3">
-      <div class="p-card"><b>1 · Semantic labelling</b><span>Superpoint Transformer, pretrained on ScanNet, classifies floor, ceiling, wall, column, opening and other; a PCA-normal fallback covers missing inference.</span></div>
-      <div class="p-card"><b>2 · Instance segmentation</b><span>Floors and ceilings by elevation clustering and DBSCAN; walls by iterative RANSAC; columns by linearity and verticality; openings refined by rasterization and flood fill in the wall plane.</span></div>
-      <div class="p-card"><b>3 · Panoptic encoding</b><span>Each element gets a unique identifier of class and instance; every point stores labels, colour, normal and local geometric descriptors.</span></div>
-    </div></div>
-  <div class="p-sub"><h3><i>3.3</i>Image processing: energy device recognition</h3><p>Devices are found in registered RGB images with class-specific synonym prompts. Four strategies are compared: A, B and D are detector-first; C is segment-first.</p><div class="p-two"><figure class="p-fig"><img src="assets/fig2_detections.webp" alt="Figure 2: Examples of object detection using Method D and corresponding prompts from Table 1" loading="lazy"><figcaption><b>Figure 2.</b> Examples of object detection using Method D and corresponding prompts from Table 1.</figcaption></figure><div class="p-text">
-      <div class="p-tblbox"><table class="p-tbl"><caption style="caption-side:top;text-align:left;padding:10px 12px 0;font-size:13px;color:var(--muted)">Table 1. Class prompts for the open-vocabulary detectors.</caption><thead><tr><th>Category</th><th>Prompts</th></tr></thead><tbody>
-        <tr><td>Lighting</td><td><em>light fixtures, ceiling lights</em></td></tr>
-        <tr><td>Heating</td><td><em>radiators, heaters, boilers, water heaters</em></td></tr>
-        <tr><td>Electrical</td><td><em>power outlets, wall sockets</em></td></tr>
-        <tr><td>Sensors / controls</td><td><em>detector, thermostat, switch</em></td></tr>
-        <tr><td>Devices</td><td><em>electric devices, monitors</em></td></tr>
-        <tr><td>HVAC</td><td><em>HVAC unit, ventilation device</em></td></tr>
-      </tbody></table></div>
-      <div class="p-tblbox"><table class="p-tbl"><caption style="caption-side:top;text-align:left;padding:10px 12px 0;font-size:13px;color:var(--muted)">Table 2. Evaluated 2D-to-3D labelling strategies.</caption><thead><tr><th>Method</th><th>Strategy</th><th>Configuration</th></tr></thead><tbody>
-        <tr><td>A</td><td>Detector-first</td><td>YOLO-World + SAM2</td></tr>
-        <tr><td>B</td><td>Detector-first</td><td>YOLO-World + SAM3</td></tr>
-        <tr><td>C</td><td>Segment-first</td><td>SAM3 + YOLO-World</td></tr>
-        <tr><td>D</td><td>Detector-first, open-vocabulary</td><td>GroundingDINO + SAM2</td></tr>
-      </tbody></table></div>
-    </div></div></div>
-  <div class="p-sub"><h3><i>3.4</i>Multi-view agreement and 3D instance reconstruction</h3><p>Mask pixels are back-projected with depth, intrinsics and pose. For each 3D point p, the support for class c counts the views in which p is visible and falls inside a mask of c. A point takes the class with the highest support only above a minimum number of views; labelled points are grouped into device instances and filtered by height, wall proximity, extent and mask area.</p><div class="p-eq">S<sub>c</sub>(p) = Σ<sub>i=1…N</sub> I<sub>i</sub>(p, c)</div></div>
-  <div class="p-sub"><h3><i>3.5</i>Instance validation in 3D and geometric refinement</h3><p>Predicted instances are matched one-to-one to manual references; localization and semantic correctness are scored separately, and matched instances are refined with the fused multi-view observations.</p><figure class="p-fig"><img src="assets/fig3_overview.webp" alt="Figure 3: Workflow overview: (a) input point cloud and object detection (Section 3" loading="lazy"><figcaption><b>Figure 3.</b> Workflow overview: (a) input point cloud and object detection (Section 3.1, 3.3); (b) 3D device mapping and panoptic segmentation (Sections 3.2, 3.4–3.6); (c) solid model; (d) surface-based topological model and device positions; (e) complete semantic graph; (f) BIM; and (g) BEM (Section 3.7).</figcaption></figure></div>
-  <div class="p-sub"><h3><i>3.6</i>Extraction of device technical parameters</h3><p>GLM-OCR reads equipment nameplates; text is parsed into parameter–value–unit tuples (rated power, voltage, flow rate, model…), normalized to EnergyPlus conventions and written to the matching epJSON fields. Each tuple stays linked to its 3D device, room and thermal zone.</p></div>
-  <div class="p-sub"><h3><i>3.7</i>Solid model and semantic graph for spatial reasoning</h3><p>The reconstructed geometry becomes a 3D solid model, then volumetric and surface-based topological representations and the corresponding graph, exported as BIM and as an EnergyPlus BEM. The graph links geometry, topology, semantics, devices and energy information in one multi-level digital twin structure.</p></div>
+
+<section id="conclusions" class="pp-sec">
+  <h2>6&ensp;Conclusions</h2>
+  <p>We have shown a low-cost workflow that goes from a mobile mapping survey to a BIM and an EnergyPlus model. It combines structural reconstruction, device recognition in images, multi-view 3D instance reconstruction, OCR of nameplates and a semantic graph that ties everything together.</p>
+  <p>The best device-detection setup (YOLO-World + SAM2) reaches 54.0% instance-level F1, while GroundingDINO + SAM2 (42.6%) is the best compromise between run time and memory. The main structural classes reach about 90% IoU, 311 of the 312 ScanNet scans produce a valid EnergyPlus model, and OCR reads 92% of the nameplate parameters correctly.</p>
+  <p>The main problems that remain are false positives, duplicated or missed instances, occlusions, small or ambiguous devices, class definitions that do not match, and nameplates that are hard to read. Next, we want to suppress false positives more strongly, merge duplicates, train recognition on building-specific data and test the workflow on more building types.</p>
 </section>
-<section class="p-sec" id="results">
-  <div class="p-shead"><div class="eyebrow">4 · Results</div><h2>Evaluation on ScanNet</h2><p>Recognition and structural reconstruction are benchmarked on ScanNet (312 scans); OCR and the complete workflow are assessed on self-acquired data.</p></div>
-  <div class="p-sub"><h3><i>4.1</i>Image-based semantic recognition</h3><p>At image level, Method C detects 73.4% of devices at 49.5% precision; A and B are the most precise (79.3%, 78.6%) but recall about 35%. At instance level, after geometric filtering, A reaches 54.0% F1 (P 56.6%, R 51.7%), followed by B (51.7%), C (49.7%) and D (42.6%). Remaining errors come from background similarity, small or visually variable objects and taxonomy mismatch.</p><div class="p-two"><figure class="p-fig"><img src="assets/fig4_image_level.webp" alt="Figure 4: Image-level evaluation of the detection methods" loading="lazy"><figcaption><b>Figure 4.</b> Image-level evaluation of the detection methods.</figcaption></figure><figure class="p-fig"><img src="assets/fig5_instance_level.webp" alt="Figure 5: Performance of 3D instance reconstruction" loading="lazy"><figcaption><b>Figure 5.</b> Performance of 3D instance reconstruction.</figcaption></figure></div><figure class="p-fig narrow"><img src="assets/fig6_failures.webp" alt="Figure 6: Common issues in automatic detection" loading="lazy"><figcaption><b>Figure 6.</b> Common issues in automatic detection.</figcaption></figure></div>
-  <div class="p-sub"><h3><i>4.2</i>Structural 3D reconstruction</h3><p>All 312 scans were processed. Floor, ceiling and wall reach 87–94% IoU; openings and columns remain the weakest classes (46–59%).</p><figure class="p-fig narrow"><img src="assets/fig7_structural.webp" alt="Figure 7: Per-class reconstruction metrics" loading="lazy"><figcaption><b>Figure 7.</b> Per-class reconstruction metrics.</figcaption></figure></div>
-  <div class="p-sub"><h3><i>4.3</i>Multi-view 3D reconstruction and computational performance</h3><p>Method D is the most balanced (0.66 s/frame, 4.66 instances/s, about 3.56 GB); A has the lowest memory (2.29 GB). Recognition and fusion take about 6 min per scene on a laptop RTX 4050 GPU.</p><figure class="p-fig narrow"><img src="assets/fig8_compute.webp" alt="Figure 8: Computational efficiency of the evaluated configurations" loading="lazy"><figcaption><b>Figure 8.</b> Computational efficiency of the evaluated configurations.</figcaption></figure></div>
-  <div class="p-sub"><h3><i>4.4</i>Semantic graph and BEM representation</h3><p>Nodes are spatial, architectural and device entities; edges encode verified spatial or functional relations. Each device is linked to its room, supporting surface and thermal zone.</p><div class="p-two"><figure class="p-fig"><img src="assets/fig9_graph_steps.webp" alt="Figure 9: Steps from the initial point cloud representation to the typed semantic graph used for BEM and EDTs generation" loading="lazy"><figcaption><b>Figure 9.</b> Steps from the initial point cloud representation to the typed semantic graph used for BEM and EDTs generation.</figcaption></figure><figure class="p-fig"><img src="assets/fig10_scenes.webp" alt="Figure 10: Representative reconstruction stages for three scenes, showing the geometric processing from the input scene to the final BEM and scene graph" loading="lazy"><figcaption><b>Figure 10.</b> Representative reconstruction stages for three scenes, showing the geometric processing from the input scene to the final BEM and scene graph.</figcaption></figure></div></div>
-  <div class="p-sub"><h3><i>4.5</i>Image-to-epJSON device parameter enrichment</h3><p>Across seven boiler and water-heater nameplates, 48 of 52 energy-relevant parameters (92%) were extracted correctly; most errors came from one low-resolution, strongly inclined plate.</p><figure class="p-fig narrow"><img src="assets/fig11_ocr.webp" alt="Figure 11: Example of OCR-assisted mapping of image-extracted nameplate data to EnergyPlus epJSON parameters" loading="lazy"><figcaption><b>Figure 11.</b> Example of OCR-assisted mapping of image-extracted nameplate data to EnergyPlus epJSON parameters.</figcaption></figure></div>
-  <div class="p-sub"><h3><i>4.6</i>Energy simulations</h3><p>Each zone was simulated in EnergyPlus 24.2 with generic constructions, the Mannheim (DWD) weather file and ideal loads (20/26 °C). Volume error follows the footprint (correlation 0.87), not the height (0.04): improving footprint closure in partly scanned rooms is the most effective next step.</p><div class="p-kpis">
-      <div class="p-kpi"><b>99.7<small>%</small></b><span>scans (311 of 312) simulate without severe errors</span></div>
-      <div class="p-kpi"><b>0.81</b><span>median footprint IoU</span></div>
-      <div class="p-kpi"><b>3.2<small> cm</small></b><span>median wall-point distance</span></div>
-      <div class="p-kpi"><b>9.6 / 11.1<small>%</small></b><span>floor-area / volume error</span></div>
-      <div class="p-kpi"><b>4.2<small>%</small></b><span>median height error</span></div>
-    </div></div>
+
+<section id="media" class="pp-sec">
+  <h2>Videos and extra figures</h2>
+  <p>A few renderings made from the same data as the paper. The videos have no sound.</p>
+
+  <h3>Building the scene graph</h3>
+  <p>A ScanNet scan with its panoptic point cloud on the left. On the right the graph is built step by step: the building, the room, the walls, the openings and finally the objects.</p>
+  <figure class="pp-fig"><video controls muted loop playsinline preload="metadata" poster="media/scene_graph_creation.jpg"><source src="media/scene_graph_creation.mp4" type="video/mp4"></video><figcaption><b>Video 1.</b> Scene graph creation for a ScanNet scan.</figcaption></figure>
+
+  <h3>Two ScanNet scans, three models</h3>
+  <p>The camera circles scene0144_00 and then scene0203_00. Each scan is shown as the panoptic point cloud, the solid model with the furniture kept as points, and the BEM surfaces with the scene graph inside. The wall nearest the camera fades out so you can see into the room.</p>
+  <figure class="pp-fig"><video controls muted loop playsinline preload="metadata" poster="media/scannet_walkthrough.jpg"><source src="media/scannet_walkthrough.mp4" type="video/mp4"></video><figcaption><b>Video 2.</b> Panoptic point cloud, solid model and BEM with scene graph for two ScanNet scans.</figcaption></figure>
+
+  <h3>Four more scans</h3>
+  <p>Four scans with different room shapes, from a simple box to an L-shaped room with twelve walls. In the surface models the dots are the shared vertices, the arrows are the outward normals that EnergyPlus needs, and W1, W2 and so on are the wall surfaces.</p>
+  <figure class="pp-fig"><img src="media/scannet_4scenes.webp" alt="Solid model, surface model and BEM with scene graph for four ScanNet scans" loading="lazy"><figcaption><b>Figure 16.</b> Solid model, surface model with vertices and normals, and BEM with scene graph for scene0329_01, scene0645_01, scene0644_00 and scene0653_01.</figcaption></figure>
+
+  <h3>The case-study flat</h3>
+  <p>A walk through the flat from Section 5. The BIM and its semantic graph are on the left; the BEM is on the right, with each thermal zone coloured by air temperature, following the same camera path. The still image shows the flat as a digital twin, with the rooms coloured by temperature and the sensors and devices placed in 3D.</p>
+  <figure class="pp-fig"><video controls muted loop playsinline preload="metadata" poster="media/casa_bim_bem_walkthrough.jpg"><source src="media/casa_bim_bem_walkthrough.mp4" type="video/mp4"></video><figcaption><b>Video 3.</b> BIM with semantic graph (left) and BEM with thermal zones and energy graph (right) for the case-study flat.</figcaption></figure>
+  <figure class="pp-fig"><img src="media/casa_digital_twin.webp" alt="Digital twin view of the case-study flat" loading="lazy"><figcaption><b>Figure 17.</b> Digital twin view of the case-study flat. You can also open an <a href="media/casa_digital_twin.html" target="_blank" rel="noopener">interactive 3D version</a>.</figcaption></figure>
 </section>
-<section class="p-sec" id="case-study">
-  <div class="p-shead"><div class="eyebrow">5 · Case study</div><h2>A real flat surveyed with STELVIO, end to end</h2></div>
-  <div class="p-chips"><span><b>447</b> registered images</span><span><b>~19 M</b> points</span><span><b>6</b> rooms · <b>~80 m²</b></span><span><b>~5 mm</b> median point spacing</span><span>graph with <b>70</b> nodes, <b>78</b> edges</span><span><b>86.7%</b> of devices seen from several views</span><span>radiators: P <b>83.3%</b> · R <b>55.6%</b> · F1 <b>66.7%</b></span></div>
-  <div class="p-two"><figure class="p-fig"><img src="assets/fig12_dataset.webp" alt="Figure 12: The dataset used for validation: (a) top view, (b) point cloud and STELVIO trajectory, (c) examples of acquired images" loading="lazy"><figcaption><b>Figure 12.</b> The dataset used for validation: (a) top view, (b) point cloud and STELVIO trajectory, (c) examples of acquired images.</figcaption></figure><figure class="p-fig"><img src="assets/fig13_case_detections.webp" alt="Figure 13: Object detection on the example case study frames" loading="lazy"><figcaption><b>Figure 13.</b> Object detection on the example case study frames.</figcaption></figure></div>
-  <div class="p-two"><figure class="p-fig"><img src="assets/fig14_case_models.webp" alt="Figure 14: Images from the complete workflow: (a) solid model; (b) BIM; (c) surface-based model with semantic room classification; and (d) BEM with thermal boundaries and building-service devices" loading="lazy"><figcaption><b>Figure 14.</b> Images from the complete workflow: (a) solid model; (b) BIM; (c) surface-based model with semantic room classification; and (d) BEM with thermal boundaries and building-service devices.</figcaption></figure><figure class="p-fig"><img src="assets/fig15_dynamo.webp" alt="Figure 15: Dynamo visualization of the space topology, scene graph and temperature" loading="lazy"><figcaption><b>Figure 15.</b> Dynamo visualization of the space topology, scene graph and temperature.</figcaption></figure></div>
+</main>
+
+<main class="pp-col">
+<section class="pp-sec" id="cite">
+  <h2>Citation</h2>
+  <p>If you use this work, please cite:</p>
+  <div class="pp-bib"><button class="pp-copy" id="copybib" type="button">Copy</button><pre id="bibtex">@inproceedings{roman2026lowcost,
+  title     = {Towards Building Energy Digital Twins with a Low-Cost Portable Mobile Mapping System},
+  author    = {Roman, O. and Trybała, P. and Farella, E. M. and Remondino, F.},
+  booktitle = {ISPRS LC3D 2026},
+  year      = {2026}
+}</pre></div>
+  <h3>Related papers from our group</h3>
+  <ol class="pp-refs">
+    <li>Roman, O., Bassier, M., Agugiaro, G., Arroyo Ohori, K., Farella, E.M., Remondino, F., 2025. <a href="https://www.mdpi.com/2075-5309/15/22/4060" target="_blank" rel="noopener">Scan-to-EDTs: Automated generation of Energy Digital Twins from 3D point clouds</a>. <em>Buildings</em>, 15(22), 4060.</li>
+    <li>Roman, O., Bassier, M., De Geyter, S., De Winter, H., Farella, E.M., Remondino, F., 2024. BIM module for deep learning-driven parametric IFC reconstruction. <em>Int. Arch. Photogramm. Remote Sens. Spatial Inf. Sci.</em>, XLVIII-2/W8-2024, 403–410.</li>
+    <li>Trybała, P., Morelli, L., Facenda, S., Razzino, A., Remondino, F., 2025. STELVIO: Exploring factor graphs for a robust stereo-visual-LiDAR-inertial odometry. <em>Int. Arch. Photogramm. Remote Sens. Spatial Inf. Sci.</em>, XLVIII-1/W5-2025, 125–131.</li>
+  </ol>
+  <p class="pp-ack">This study was carried out within the Power Twin project, supported by the 2026 PoC by Trentino – Test Your Idea! programme, promoted by Fondazione Bruno Kessler and the University of Trento (Italy).</p>
 </section>
-<section class="p-sec" id="conclusions">
-  <div class="p-shead"><div class="eyebrow">6 · Conclusions</div><h2>An end-to-end, low-cost path from mapping to BIM and BEM</h2></div>
-  <div class="p-two">
-    <div class="p-text">
-      <p>The workflow integrates structural reconstruction, image-based device recognition, multi-view 3D instance reconstruction, OCR-based parameter extraction and semantic graph generation, with export to BIM and EnergyPlus.</p>
-      <p>The best configuration (YOLO-World + SAM2) reaches 54.0% instance-level F1; GroundingDINO + SAM2 (42.6%) offers the best runtime–memory balance. Main structural classes reach about 90% IoU, 311 of 312 ScanNet scans give a valid EnergyPlus model, and OCR extracts 92% of parameters correctly.</p>
-    </div>
-    <div class="p-card"><b>Limitations and next steps</b><span>False positives, duplicate or missed instances, occlusions, small or ambiguous devices, taxonomy mismatch and nameplate readability. Future work: stronger false-positive suppression, duplicate merging, domain-specific recognition and validation across more building types.</span></div>
-  </div>
-</section>
+</main>
 <section class="p-sec explorer-sec" id="explorer">
   <header class="head">
     <div>
-      <div class="p-shead"><div class="eyebrow">Interactive results · all 312 ScanNet scans</div>
-      <h2>Every scan, from point cloud to energy model</h2>
-      <p>Every ScanNet scan processed by the pipeline: panoptic segmentation, wall and opening reconstruction, a closed solid, the EnergyPlus surface model and the semantic graph placed in 3D. Pick a scan to rotate all six 3D views together.</p></div>
+      <div class="p-shead"><h2>Results for all 312 ScanNet scans</h2>
+      <p>Here you can look at every ScanNet scan we ran through the pipeline. For each one you get the input point cloud, the panoptic segmentation, the reconstructed walls and openings, the closed solid, the EnergyPlus surface model and the semantic graph. Choose a scan from the list; the six 3D views share one camera, so they all turn together.</p></div>
     </div>
     <div>
       <div class="figs" id="figs"></div>
@@ -427,11 +571,11 @@ html{scroll-behavior:smooth}
       <div class="views" id="views">
         <canvas id="gl"></canvas>
         <div class="pv" data-k="0"><div class="lab"><b>RGB point cloud</b><span>input</span></div><button class="ex" title="Enlarge" aria-label="Enlarge RGB point cloud">⤢</button></div>
-        <div class="pv" data-k="1"><div class="lab"><b>Panoptic</b><span>stuff by class, things by instance</span></div><button class="ex" title="Enlarge" aria-label="Enlarge panoptic view">⤢</button></div>
+        <div class="pv" data-k="1"><div class="lab"><b>Panoptic</b><span>structure by class, objects by instance</span></div><button class="ex" title="Enlarge" aria-label="Enlarge panoptic view">⤢</button></div>
         <div class="pv" data-k="2"><div class="lab"><b>Classified cloud + model</b><span>points inside the wall wireframe</span></div><button class="ex" title="Enlarge" aria-label="Enlarge classified view">⤢</button></div>
-        <div class="pv" data-k="3"><div class="lab"><b>Solid model</b><span>walls, slab, openings + objects</span></div><button class="ex" title="Enlarge" aria-label="Enlarge solid model">⤢</button></div>
+        <div class="pv" data-k="3"><div class="lab"><b>Solid model</b><span>walls, slab, openings and objects</span></div><button class="ex" title="Enlarge" aria-label="Enlarge solid model">⤢</button></div>
         <div class="pv" data-k="4"><div class="lab"><b>Surface-based model</b><span>EnergyPlus surfaces, openings, objects</span></div><button class="ex" title="Enlarge" aria-label="Enlarge surface-based model">⤢</button></div>
-        <div class="pv" data-k="5"><div class="lab"><b>BEM and scene graph</b><span>surface model with the 3D semantic graph</span></div><div class="glegend"><span><i style="background:#1F2A33"></i>building</span><span><i style="background:#3D4A5F"></i>room</span><span><i style="background:#8C9AA5"></i>wall</span><span><i style="background:#A0613F"></i>object</span><span><i style="background:#E07B39"></i>door</span><span><i style="background:#4A97C9"></i>window</span></div><button class="ex" title="Enlarge" aria-label="Enlarge BEM and scene graph">⤢</button></div>
+        <div class="pv" data-k="5"><div class="lab"><b>BEM and scene graph</b><span>surface model with the semantic graph</span></div><div class="glegend"><span><i style="background:#1F2A33"></i>building</span><span><i style="background:#3D4A5F"></i>room</span><span><i style="background:#8C9AA5"></i>wall</span><span><i style="background:#A0613F"></i>object</span><span><i style="background:#E07B39"></i>door</span><span><i style="background:#4A97C9"></i>window</span></div><button class="ex" title="Enlarge" aria-label="Enlarge BEM and scene graph">⤢</button></div>
         <div class="loading" id="loading" hidden>Loading scan…</div>
       </div>
       <div class="bar">
@@ -440,7 +584,7 @@ html{scroll-behavior:smooth}
           <span><i style="background:#E07B39"></i>door</span><span><i style="background:#4A90C8"></i>window</span>
           <span><i style="background:#B8864F"></i>furniture &amp; objects</span><span><i style="background:#9467BD"></i>picture</span><span><i style="background:#20B2C4"></i>fixtures</span>
         </div>
-        <div class="hint">Drag to orbit · right-drag to pan · scroll to zoom · the sixth view shows the semantic graph in the scene</div>
+        <div class="hint">Drag to rotate, right-drag to pan, scroll to zoom.</div>
       </div>
       <div class="metrics" id="metrics"></div>
     </div>
@@ -461,28 +605,12 @@ html{scroll-behavior:smooth}
   </section>
 
   <footer class="about">
-    <div><h3>The six views</h3><p>All six 3D views share one camera. The point clouds are random subsets of about 45,000 points per scan with the ceiling removed. Walls, doors and windows come from the reconstructed model, and the surfaces are the ones written to the EnergyPlus input file.</p></div>
-    <div><h3>Metrics</h3><p><b>Footprint IoU</b>: overlap of the reconstructed zone footprint with the reference footprint. <b>Floor-area, height and volume error</b>: signed relative error against the reference. <b>Wall distance</b>: median distance of wall-labelled points to their reconstructed wall plane.</p></div>
-    <div><h3>Energy</h3><p>Each zone was simulated in EnergyPlus 24.2 with generic constructions, the Mannheim (DWD) weather file and ideal loads at 20/26 °C. Heating and cooling are annual zone loads; the per-m² values divide by the reconstructed floor area.</p></div>
+    <div><h3>About the views</h3><p>To keep the page light, each point cloud is a random sample of about 45,000 points, with the ceiling taken out so you can see inside. Walls, doors and windows come from our reconstructed model, and the surfaces are exactly the ones we wrote to the EnergyPlus input file.</p></div>
+    <div><h3>What the numbers mean</h3><p>Footprint IoU is the overlap between our zone footprint and the reference one. Floor-area, height and volume errors are signed and relative to the reference. Wall distance is the median distance from the wall points to the wall plane we fitted.</p></div>
+    <div><h3>Energy</h3><p>Every zone was simulated in EnergyPlus 24.2 with generic constructions, the Mannheim (DWD) weather file and ideal loads at 20 and 26 °C. Heating and cooling are annual loads for the zone, and the per-m² values use our reconstructed floor area.</p></div>
   </footer>
 </section>
-<section class="p-sec" id="cite">
-  <div class="p-shead"><div class="eyebrow">Citation</div><h2>Cite this work</h2></div>
-  <div class="p-bib"><button class="btn p-copy" id="copybib" type="button">Copy</button><pre id="bibtex">@inproceedings{roman2026lowcost,
-  title     = {Towards Building Energy Digital Twins with a Low-Cost Portable Mobile Mapping System},
-  author    = {Roman, O. and Trybała, P. and Farella, E. M. and Remondino, F.},
-  booktitle = {ISPRS LC3D 2026},
-  year      = {2026}
-}</pre></div>
-  <div class="p-sub"><h3>Related work from the group</h3>
-  <ol class="p-refs">
-    <li>Roman, O., Bassier, M., Agugiaro, G., Arroyo Ohori, K., Farella, E.M., Remondino, F., 2025. <a href="https://www.mdpi.com/2075-5309/15/22/4060" target="_blank" rel="noopener">Scan-to-EDTs: Automated generation of Energy Digital Twins from 3D point clouds</a>. <em>Buildings</em>, 15(22), 4060.</li>
-    <li>Roman, O., Bassier, M., De Geyter, S., De Winter, H., Farella, E.M., Remondino, F., 2024. BIM module for deep learning-driven parametric IFC reconstruction. <em>Int. Arch. Photogramm. Remote Sens. Spatial Inf. Sci.</em>, XLVIII-2/W8-2024, 403–410.</li>
-    <li>Trybała, P., Morelli, L., Facenda, S., Razzino, A., Remondino, F., 2025. STELVIO: Exploring factor graphs for a robust stereo-visual-LiDAR-inertial odometry. <em>Int. Arch. Photogramm. Remote Sens. Spatial Inf. Sci.</em>, XLVIII-1/W5-2025, 125–131.</li>
-  </ol></div>
-  <p class="p-ack"><b>Acknowledgement.</b> This study was carried out within the Power Twin project, supported by the 2026 PoC by Trentino – Test Your Idea! programme, promoted by Fondazione Bruno Kessler and the University of Trento (Italy).</p>
-</section>
-<footer class="p-foot"><span>© 2026 3D Optical Metrology unit, Fondazione Bruno Kessler</span><span><a href="https://powertwin.fbk.eu/" target="_blank" rel="noopener">powertwin.fbk.eu</a> · <a href="https://3dom.fbk.eu" target="_blank" rel="noopener">3dom.fbk.eu</a></span></footer>
+<footer class="pp-foot">© 2026 3D Optical Metrology unit, Fondazione Bruno Kessler &nbsp;·&nbsp; <a href="https://powertwin.fbk.eu/" target="_blank" rel="noopener">powertwin.fbk.eu</a> &nbsp;·&nbsp; <a href="https://3dom.fbk.eu" target="_blank" rel="noopener">3dom.fbk.eu</a></footer>
 </div>
 <div class="tip" id="tip" hidden></div>
 
@@ -853,7 +981,7 @@ void main(){ vec2 p = gl_PointCoord * 2.0 - 1.0; float r = dot(p, p); if (r > 1.
 </script>
 <script>
 (() => {
-  document.querySelectorAll('.p-fig img').forEach(img => img.addEventListener('click', () => {
+  document.querySelectorAll('.p-fig img, .pp-fig img').forEach(img => img.addEventListener('click', () => {
     const lb = document.createElement('div'); lb.className = 'lb'; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-label', img.alt);
     const big = new Image(); big.src = img.src; big.alt = img.alt; lb.appendChild(big);
     const close = () => { lb.remove(); document.removeEventListener('keydown', esc); };
